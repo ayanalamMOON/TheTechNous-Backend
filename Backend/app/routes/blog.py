@@ -11,4 +11,5 @@ def can_post(user_id):
 @blog.route('/blog', methods=[POST])
 def get_posts():
     posts = BlogPost.query.all()
-    return jsonify([{"id": post.id, "title": post.title}])
+    return jsonify([{"id": post.id, "title": post.title, 
+                    "content": post.content, "author": post.author.username} for post in posts]), 200
