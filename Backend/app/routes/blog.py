@@ -35,7 +35,35 @@ def update_post(post_id)
     post = BlogPost.query.get(post_id)
 
     if not post:
-        return jsonify 
+        return jsonify ({"msg": "Post not found"}), 404
+    
+    if post.author_id != current_user_id and not can_post(current_user_id):
+        return jsonify({"msg": "You don't have the permission to update this post"}), 403
+    
+
+    data = request.get_json()
+    post.title = data['title', post.title]
+    post.content = data['content', post.content]
+    db.session.commit()
+
+    return jsonify({"msg": "Post Updated Successfully"}), 200
+
+@blog.route('/post/<int:post_id>', methods=['DELETE'])
+@jwt_required
+def delete_post(post_id):
+    current_user_id = get_jwt_identity()
+    post = BlogPost.query.get(post_id)
+
+    if not post:
+        return jsonify({"msg": "Post not found"}), 404
+    
+    if post.author_id != current_user_id and not can_post(current_user_id):
+        return jsonify({"msg": "You don't have the permission to delete this post"}), 403
+    
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({"msg": "Post Deleted Successfully"}), 200
     
 
 
