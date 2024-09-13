@@ -1,4 +1,9 @@
+from flask import Blueprint, request, jsonify
 auth = Blueprint('auth', __name__)
+
+@auth.route('/')
+def auth_home():
+    return jsonify({'msg': 'Auth Home'}), 200    
 
 @auth.route('/login', methods=['POST'])
 def register():
@@ -11,7 +16,7 @@ def register():
         return jsonify({'message': 'Username already exists'}), 400
     
     if User.query.filter_by(email=email).first():
-        return jsonify({'message': 'Email already exists}), 400
+        return jsonify({'message': 'Email already exists'}), 400
 
 
     new_user = User(username=username, email=email)

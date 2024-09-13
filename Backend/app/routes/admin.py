@@ -4,6 +4,10 @@ from app.models import db, User
 
 admin = Blueprint('admin', __name__)
 
+@admin.route('/')
+def admin_home():
+    return jsonify({'msg': 'Admin Home'}), 200
+
 def is_admin():
     user = User.query.get(user_id)
     return user.is_admin if user else False
