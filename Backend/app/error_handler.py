@@ -1,6 +1,9 @@
 from Backend import app
 from flask import jsonify
 from werkzeug.exceptions import HTTPException # type: ignore
+from sqlalchemy.exc import SQLAlchemyError
+from marshmallow import ValidationError
+from flask_jwt_extended.exceptions import NoAuthorizationError
 
 def init_error_handler(app):
     @app.errorhandler(HTTPException)
@@ -32,9 +35,17 @@ def forbidden(e):
 def method_not_allowed(e):
     return jsonify(error = "Method not allowed" )
 
+@app.errorhandler(SQLAlchemyError)
+def handle_database_error(e):
+    app.logger.error(f"Database Error: {str(e)}")
+    return jsonify(error="A database error occurred"), 500
 
+@app.errorhandler(ValidationError)
+def handle_validation_error(e):
+    app.logger.error(f"Validation Error: {str(e)}")
+    return jsonify(error="A validation error occurred"), 400
 
-
-    
-        
-        
+@app.errorhandler(NoAuthorizationError)
+def handle_authentication_error(e):
+    app.logger.error(f"Authentication Error: {str(e)}")
+    return jsonify(error="An authentication error occurred"), 401
