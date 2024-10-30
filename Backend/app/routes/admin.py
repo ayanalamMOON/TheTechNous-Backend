@@ -8,13 +8,12 @@ admin = Blueprint('admin', __name__)
 def admin_home():
     return jsonify({'msg': 'Admin Home'}), 200
 
-def is_admin():
+def is_admin(user_id):
     user = User.query.get(user_id)
     return user.is_admin if user else False
 
-
 @admin.route('/users', methods=['GET'])
-@jwt_required
+@jwt_required()
 def get_users():
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
@@ -25,7 +24,7 @@ def get_users():
                     "email": user.email, "is_admin": user.is_admin} for user in users]), 200
 
 @admin.route('/users/<int:user_id>', methods=['PUT'])
-@jwt_required
+@jwt_required()
 def update_user(user_id):
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
@@ -42,7 +41,7 @@ def update_user(user_id):
     return jsonify({"msg": "User updated successfully"}), 200
 
 @admin.route('/users/<int:user_id>', methods=['DELETE'])
-@jwt_required
+@jwt_required()
 def delete_user(user_id):
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
