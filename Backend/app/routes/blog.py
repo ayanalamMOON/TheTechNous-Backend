@@ -7,7 +7,7 @@ from app.schemas import blog_post_schema
 from app.activity_logger import log_user_activity
 
 blog = Blueprint('blog', __name__)
-cache = Cache(config={'CACHE_TYPE': 'simple'})
+cache = Cache(config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': 'redis://localhost:6379/1'})
 
 def can_post(user_id):
     user = User.query.get(user_id)
@@ -76,7 +76,7 @@ def update_post(post_id):
 
     return jsonify({"msg": "Post Updated Successfully"}), 200
 
-@blog.route('/post/<int:post_id>', methods=['DELETE'])
+@blog.route('/post/<int:post_id>', methods['DELETE'])
 @jwt_required()
 def delete_post(post_id):
     current_user_id = get_jwt_identity()
