@@ -13,27 +13,32 @@ def init_error_handler(app):
             return jsonify(error=str(e)), e.code
         
         app.logger.error(f"Unhandled Exception: {str(e)}")
-        return jsonify(error="An Unexpected error occu"), 500
+        return jsonify(error="An Unexpected error occurred"), 500
     
 @app.errorhandler(404)
 def not_found(e):
+    app.logger.error(f"404 Error: {str(e)}")
     return jsonify(error = "Resource not found"), 404
 
 @app.errorhandler(400)
 def bad_request(e):
+    app.logger.error(f"400 Error: {str(e)}")
     return jsonify(error = "Bad Request"), 400
 
 @app.errorhandler(401)
 def unauthorized(e):
-    return jsonify(error = "You are not authorized to access this resourese"), 401
+    app.logger.error(f"401 Error: {str(e)}")
+    return jsonify(error = "You are not authorized to access this resource"), 401
 
 @app.errorhandler(403)
 def forbidden(e):
-    return jsonify(error = "You don't have the permission to access this resourese")
+    app.logger.error(f"403 Error: {str(e)}")
+    return jsonify(error = "You don't have the permission to access this resource"), 403
 
 @app.errorhandler(405)
 def method_not_allowed(e):
-    return jsonify(error = "Method not allowed" )
+    app.logger.error(f"405 Error: {str(e)}")
+    return jsonify(error = "Method not allowed"), 405
 
 @app.errorhandler(SQLAlchemyError)
 def handle_database_error(e):

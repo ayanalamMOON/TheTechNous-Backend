@@ -19,9 +19,11 @@ def get_users():
     if not is_admin(current_user_id):
         return jsonify({'msg': 'Admin Access required'}), 403
     
-    users = User.query.all()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    users = User.query.paginate(page=page, per_page=per_page)
     return jsonify([{"id": user.id, "username": user.username, 
-                    "email": user.email, "is_admin": user.is_admin} for user in users]), 200
+                    "email": user.email, "is_admin": user.is_admin} for user in users.items]), 200
 
 @admin.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()

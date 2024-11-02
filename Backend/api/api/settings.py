@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import logging.config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-msit7$4d*^4y%@*t-8c71(*d1oilxan*4cm8-u4vu7j2sz#!3k'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-msit7$4d*^4y%@*t-8c71(*d1oilxan*4cm8-u4vu7j2sz#!3k')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -129,3 +131,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 META_SITE_PROTOCOL = 'https'
 META_USE_SITES = True
 META_USE_OG_PROPERTIES = True
+
+# Logging configuration
+LOGGING_CONFIG = None
+
+LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': LOGLEVEL,
+    },
+})
