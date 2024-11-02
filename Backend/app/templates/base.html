@@ -13,6 +13,19 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="URL to your image">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Your Website Title",
+        "url": "{{ request.build_absolute_uri }}",
+        "description": "Your website description here",
+        "author": {
+            "@type": "Person",
+            "name": "Your Name"
+        }
+    }
+    </script>
 </head>
 <body>
     {% block content %}
