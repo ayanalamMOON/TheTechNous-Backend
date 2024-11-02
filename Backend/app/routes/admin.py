@@ -22,6 +22,7 @@ def get_users():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     users = User.query.paginate(page=page, per_page=per_page)
+    app.logger.info(f"Admin {current_user_id} retrieved user list")
     return jsonify([{"id": user.id, "username": user.username, 
                     "email": user.email, "is_admin": user.is_admin} for user in users.items]), 200
 
@@ -39,6 +40,7 @@ def update_user(user_id):
     data = request.get_json()
     user.is_admin = data.get('is_admin', user.is_admin)
     db.session.commit()
+    app.logger.info(f"Admin {current_user_id} updated user {user_id}")
 
     return jsonify({"msg": "User updated successfully"}), 200
 
@@ -55,5 +57,6 @@ def delete_user(user_id):
     
     db.session.delete(user)
     db.session.commit()
+    app.logger.info(f"Admin {current_user_id} deleted user {user_id}")
 
     return jsonify({"msg": "User deleted successfully"}), 200

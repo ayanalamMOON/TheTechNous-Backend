@@ -16,6 +16,7 @@ def can_post(user_id):
 @cache.cached(timeout=60)
 def get_posts():
     posts = BlogPost.query.all()
+    app.logger.info("Retrieved all blog posts")
     return jsonify([{"id": post.id, "title": post.title, 
                     "content": post.content, "author": post.author.username, "url": post.get_absolute_url()} for post in posts]), 200
 
@@ -38,6 +39,8 @@ def create_post():
 
     cache.delete_memoized(get_posts)
     cache.delete_memoized(search_posts)
+
+    app.logger.info(f"User {current_user_id} created a new post with ID {new_post.id}")
 
     return jsonify({"msg": "Post Created Successfully", "id": new_post.id}), 201
 
@@ -66,6 +69,8 @@ def update_post(post_id):
     cache.delete_memoized(get_posts)
     cache.delete_memoized(search_posts)
 
+    app.logger.info(f"User {current_user_id} updated post with ID {post_id}")
+
     return jsonify({"msg": "Post Updated Successfully"}), 200
 
 @blog.route('/post/<int:post_id>', methods=['DELETE'])
@@ -86,6 +91,8 @@ def delete_post(post_id):
     cache.delete_memoized(get_posts)
     cache.delete_memoized(search_posts)
 
+    app.logger.info(f"User {current_user_id} deleted post with ID {post_id}")
+
     return jsonify({"msg": "Post Deleted Successfully"}), 200
 
 @blog.route('/search', methods=['GET'])
@@ -93,5 +100,6 @@ def delete_post(post_id):
 def search_posts():
     query = request.args.get('q', '')
     posts = BlogPost.query.filter(BlogPost.title.contains(query) | BlogPost.content.contains(query)).all()
+    app.logger.info(f"Search query: {query} - Found {len(posts)} posts")
     return jsonify([{"id": post.id, "title": post.title, 
                     "content": post.content, "author": post.author.username, "url": post.get_absolute_url()} for post in posts]), 200

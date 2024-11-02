@@ -10,6 +10,7 @@ def init_error_handler(app):
     def handle_exception(e):
         #pass through HTTP errors
         if isinstance(e, HTTPException):
+            app.logger.error(f"HTTP Exception: {str(e)}")
             return jsonify(error=str(e)), e.code
         
         app.logger.error(f"Unhandled Exception: {str(e)}")
