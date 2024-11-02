@@ -195,6 +195,19 @@ elif ENVIRONMENT == 'ci':
             'PORT': os.getenv('CI_DB_PORT', '5432'),
         }
     }
+elif ENVIRONMENT == 'staging':
+    DEBUG = False
+    ALLOWED_HOSTS = os.getenv('STAGING_ALLOWED_HOSTS', '').split(',')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('STAGING_DB_NAME'),
+            'USER': os.getenv('STAGING_DB_USER'),
+            'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
+            'HOST': os.getenv('STAGING_DB_HOST'),
+            'PORT': os.getenv('STAGING_DB_PORT'),
+        }
+    }
 else:
     DEBUG = True
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
