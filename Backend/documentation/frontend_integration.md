@@ -273,4 +273,72 @@ deleteUser(userId, token)
    .catch(error => console.error(error.response.data));
    ```
 
-By following these steps, you can successfully integrate the back-end with the front-end of your LMS website.
+## Integrating Celery for Asynchronous Tasks
+
+1. **Install Celery and Redis**: Install Celery and Redis (or RabbitMQ) by adding them to your `requirements.txt` file:
+   ```bash
+   celery==5.2.3
+   redis==4.1.0
+   kombu==5.2.3
+   ```
+
+2. **Configure Celery in Django Settings**: Add the following configuration to your Django settings file (`Backend/api/api/settings.py`):
+   ```python
+   # Celery settings
+   CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+   CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+   CELERY_ACCEPT_CONTENT = ['json']
+   CELERY_TASK_SERIALIZER = 'json'
+   CELERY_RESULT_SERIALIZER = 'json'
+   ```
+
+3. **Create Celery Instance**: Create a new file `Backend/api/celery.py` and add the following code:
+   ```python
+   import os
+   from celery import Celery
+
+   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
+
+   app = Celery('api')
+
+   app.config_from_object('django.conf:settings', namespace='CELERY')
+
+   app.autodiscover_tasks()
+   ```
+
+4. **Define Celery Tasks**: Define a sample task in `Backend/api/tasks.py`:
+   ```python
+   from .celery import app
+
+   @app.task
+   def sample_task():
+       print("Sample task executed")
+   ```
+
+5. **Start Celery Worker**: Start the Celery worker by running the following command:
+   ```bash
+   celery -A api worker --loglevel=info
+   ```
+
+6. **Set Up Celery Beat Scheduler**: Add the following configuration to your Django settings file (`Backend/api/api/settings.py`):
+   ```python
+   # Celery Beat settings
+   CELERY_BEAT_SCHEDULE = {
+       'sample-task': {
+           'task': 'api.tasks.sample_task',
+           'schedule': 10.0,  # Run every 10 seconds
+       },
+   }
+   ```
+
+7. **Start Celery Beat Scheduler**: Start the Celery beat scheduler by running the following command:
+   ```bash
+   celery -A api beat --loglevel=info
+   ```
+
+8. **Run Both Worker and Beat Scheduler Together**: You can also run both the worker and beat scheduler together using the following command:
+   ```bash
+   celery -A api worker --beat --loglevel=info
+   ```
+
+By following these steps, you can successfully integrate Celery for asynchronous tasks in your Django project.
