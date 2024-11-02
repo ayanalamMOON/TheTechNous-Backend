@@ -2,9 +2,15 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from argon2 import PasswordHasher
 import re
+from cryptography.fernet import Fernet
+import os
 
 db = SQLAlchemy()
 ph = PasswordHasher()
+
+# Generate a key for encryption
+key = os.getenv('ENCRYPTION_KEY', Fernet.generate_key())
+cipher_suite = Fernet(key)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +43,18 @@ class User(db.Model):
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
             return False
         return True
+
+    def encrypt_data(self, data):
+        return cipher_suite.encrypt(data.encode()).decode()
+
+    def decrypt_data(self, encrypted_data):
+        return cipher_suite.decrypt(encrypted_data.encode()).decode()
+
+    def set_email(self, email):
+        self.email = self.encrypt_data(email)
+
+    def get_email(self):
+        return self.decrypt_data(self.email)
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)

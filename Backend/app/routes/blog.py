@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, BlogPost, User
 from flask_caching import Cache
+from marshmallow import ValidationError
+from app.schemas import blog_post_schema
 
 blog = Blueprint('blog', __name__)
 cache = Cache(config={'CACHE_TYPE': 'simple'})
@@ -25,6 +27,11 @@ def create_post():
         return jsonify({"msg": "You don't have the permission to post"}), 403
     
     data = request.get_json()
+    try:
+        blog_post_schema.load(data)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
     new_post = BlogPost(title=data['title'], content=data['content'], author_id=current_user_id)
     db.session.add(new_post)
     db.session.commit()
@@ -47,6 +54,11 @@ def update_post(post_id):
         return jsonify({"msg": "You don't have the permission to update this post"}), 403
     
     data = request.get_json()
+    try:
+        blog_post_schema.load(data)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
     post.title = data.get('title', post.title)
     post.content = data.get('content', post.content)
     db.session.commit()

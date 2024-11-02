@@ -157,3 +157,39 @@ logging.config.dictConfig({
         'level': LOGLEVEL,
     },
 })
+
+# Environment-specific settings
+ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
+
+if ENVIRONMENT == 'production':
+    DEBUG = False
+    ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DJANGO_DB_NAME'),
+            'USER': os.getenv('DJANGO_DB_USER'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+            'HOST': os.getenv('DJANGO_DB_HOST'),
+            'PORT': os.getenv('DJANGO_DB_PORT'),
+        }
+    }
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+# HTTPS settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
