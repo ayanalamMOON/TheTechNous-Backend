@@ -182,6 +182,19 @@ if ENVIRONMENT == 'production':
     SECURE_HSTS_SECONDS = 3600
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+elif ENVIRONMENT == 'ci':
+    DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('CI_DB_NAME', 'ci_db'),
+            'USER': os.getenv('CI_DB_USER', 'ci_user'),
+            'PASSWORD': os.getenv('CI_DB_PASSWORD', 'ci_password'),
+            'HOST': os.getenv('CI_DB_HOST', 'localhost'),
+            'PORT': os.getenv('CI_DB_PORT', '5432'),
+        }
+    }
 else:
     DEBUG = True
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
