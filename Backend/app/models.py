@@ -19,6 +19,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
+    mfa_secret = db.Column(db.String(32), nullable=True)
 
     def set_password(self, password):
         if not self.validate_password(password):
