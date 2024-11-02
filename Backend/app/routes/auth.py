@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.models import db, User
 import pyotp
+from app.activity_logger import log_user_activity
 
 auth = Blueprint('auth', __name__)
 
@@ -28,6 +29,8 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
+    log_user_activity(new_user.id, 'User registered')
+
     return jsonify({'message': 'User created successfully', 'mfa_secret': new_user.mfa_secret}), 201
 
 @auth.route('/login', methods=['POST'])
@@ -40,6 +43,7 @@ def login():
         totp = pyotp.TOTP(user.mfa_secret)
         if totp.verify(otp):
             access_token = create_access_token(identity=user.id)
+            log_user_activity(user.id, 'User logged in')
             return jsonify({'access_token': access_token}), 200
         else:
             return jsonify({'message': 'Invalid OTP'}), 401
@@ -51,4 +55,5 @@ def login():
 def profile():
     current_user = get_jwt_identity()
     user = User.query.get(current_user)
+    log_user_activity(current_user, 'Viewed profile')
     return jsonify({'username': user.username, 'email': user.email, 'is_admin': user.is_admin}), 200

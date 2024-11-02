@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, User
+from app.activity_logger import log_user_activity
 
 admin = Blueprint('admin', __name__)
 
@@ -22,7 +23,7 @@ def get_users():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     users = User.query.paginate(page=page, per_page=per_page)
-    app.logger.info(f"Admin {current_user_id} retrieved user list")
+    log_user_activity(current_user_id, 'Retrieved user list')
     return jsonify([{"id": user.id, "username": user.username, 
                     "email": user.email, "is_admin": user.is_admin} for user in users.items]), 200
 
@@ -40,7 +41,7 @@ def update_user(user_id):
     data = request.get_json()
     user.is_admin = data.get('is_admin', user.is_admin)
     db.session.commit()
-    app.logger.info(f"Admin {current_user_id} updated user {user_id}")
+    log_user_activity(current_user_id, f'Updated user {user_id}')
 
     return jsonify({"msg": "User updated successfully"}), 200
 
@@ -57,6 +58,6 @@ def delete_user(user_id):
     
     db.session.delete(user)
     db.session.commit()
-    app.logger.info(f"Admin {current_user_id} deleted user {user_id}")
+    log_user_activity(current_user_id, f'Deleted user {user_id}')
 
     return jsonify({"msg": "User deleted successfully"}), 200

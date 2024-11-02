@@ -78,3 +78,11 @@ class BlogPost(db.Model):
 
     def get_absolute_url(self):
         return f"/blog/post/{self.id}"
+
+class UserActivityLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    activity = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))

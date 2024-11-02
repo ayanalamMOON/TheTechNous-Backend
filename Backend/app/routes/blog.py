@@ -4,6 +4,7 @@ from app.models import db, BlogPost, User
 from flask_caching import Cache
 from marshmallow import ValidationError
 from app.schemas import blog_post_schema
+from app.activity_logger import log_user_activity
 
 blog = Blueprint('blog', __name__)
 cache = Cache(config={'CACHE_TYPE': 'simple'})
@@ -41,6 +42,7 @@ def create_post():
     cache.delete_memoized(search_posts)
 
     app.logger.info(f"User {current_user_id} created a new post with ID {new_post.id}")
+    log_user_activity(current_user_id, f'Created a new post with ID {new_post.id}')
 
     return jsonify({"msg": "Post Created Successfully", "id": new_post.id}), 201
 
@@ -70,6 +72,7 @@ def update_post(post_id):
     cache.delete_memoized(search_posts)
 
     app.logger.info(f"User {current_user_id} updated post with ID {post_id}")
+    log_user_activity(current_user_id, f'Updated post with ID {post_id}')
 
     return jsonify({"msg": "Post Updated Successfully"}), 200
 
@@ -92,6 +95,7 @@ def delete_post(post_id):
     cache.delete_memoized(search_posts)
 
     app.logger.info(f"User {current_user_id} deleted post with ID {post_id}")
+    log_user_activity(current_user_id, f'Deleted post with ID {post_id}')
 
     return jsonify({"msg": "Post Deleted Successfully"}), 200
 
