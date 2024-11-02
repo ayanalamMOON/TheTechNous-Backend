@@ -243,3 +243,14 @@ CACHES = {
         }
     }
 }
+
+# Rate limiting settings
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
+}
+
+# Input validation settings
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5 MB
