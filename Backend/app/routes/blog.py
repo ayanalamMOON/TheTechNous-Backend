@@ -12,7 +12,7 @@ def can_post(user_id):
 def get_posts():
     posts = BlogPost.query.all()
     return jsonify([{"id": post.id, "title": post.title, 
-                    "content": post.content, "author": post.author.username} for post in posts]), 200
+                    "content": post.content, "author": post.author.username, "url": post.get_absolute_url()} for post in posts]), 200
 
 @blog.route('/post', methods=['POST'])
 @jwt_required()
@@ -47,7 +47,7 @@ def update_post(post_id):
 
     return jsonify({"msg": "Post Updated Successfully"}), 200
 
-@blog.route('/post/<int:post_id>', methods['DELETE'])
+@blog.route('/post/<int:post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
     current_user_id = get_jwt_identity()
@@ -63,6 +63,3 @@ def delete_post(post_id):
     db.session.commit()
 
     return jsonify({"msg": "Post Deleted Successfully"}), 200
-
-
-

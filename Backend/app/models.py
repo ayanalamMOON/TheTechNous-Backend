@@ -25,3 +25,6 @@ class BlogPost(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     author = db.relationship('User', backref=db.backref('blog_posts', lazy=True))
+
+    def get_absolute_url(self):
+        return f"/blog/post/{self.id}"
