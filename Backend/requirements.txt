@@ -10,7 +10,8 @@ requests==2.27.1
 python-dotenv==0.20.0
 django-meta==2.0.0
 django-imagekit==4.0.2
-django-sitemap==0.6.0
 celery==5.2.3
 redis==4.1.0
 kombu==5.2.3
+black==21.12b0
+coverage==6.2

@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "test": "python Backend/api/manage.py test",
+    "build": "pip install -r Backend/requirements.txt",
+    "launch": "export DJANGO_SECRET_KEY=your_secret_key && export DJANGO_DEBUG=True && export DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1 && python Backend/api/manage.py runserver"
+  }
+}

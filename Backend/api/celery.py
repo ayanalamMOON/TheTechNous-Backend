@@ -3,8 +3,10 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
-app = Celery('api')
+def make_celery():
+    app = Celery('api')
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+    app.autodiscover_tasks()
+    return app
 
-app.config_from_object('django.conf:settings', namespace='CELERY')
-
-app.autodiscover_tasks()
+app = make_celery()
