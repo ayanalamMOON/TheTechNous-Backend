@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_meta',
     'imagekit',
     'django.contrib.sitemaps',
+    'django.contrib.sites',  # Site framework support
 ]
 
 MIDDLEWARE = [
@@ -277,3 +278,9 @@ REQUIRED_ENV_VARS = [
 for var in REQUIRED_ENV_VARS:
     if var not in os.environ:
         raise EnvironmentError(f"Required environment variable {var} is not set.")
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]

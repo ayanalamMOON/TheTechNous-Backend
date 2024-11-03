@@ -9,13 +9,10 @@ Function views
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from app import views
 from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.sitemaps import Sitemap
@@ -50,4 +47,9 @@ urlpatterns = [
     path('post/<slug:slug>/', views.post_detail, name='post_detail', app=app),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('roles/', include('app.roles.urls')),  # User roles and permissions management
+    path('notifications/', include('app.notifications.urls')),  # Notification system
+    path('social/', include('app.social.urls')),  # Social media sharing
+    path('media/', include('app.media.urls')),  # File uploads and media management
+    path('search/', include('app.search.urls')),  # Advanced search functionality
 ]

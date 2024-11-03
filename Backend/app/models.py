@@ -87,3 +87,33 @@ class UserActivityLog(db.Model):
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    message = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+
+class SocialMediaShare(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('blog_post.id'), nullable=False, index=True)
+    platform = db.Column(db.String(64), nullable=False)
+    shared_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    post = db.relationship('BlogPost', backref=db.backref('social_shares', lazy=True))
+
+class MediaFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(255), nullable=False)
+    file_url = db.Column(db.String(255), nullable=False)
+    uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
+
+class SearchQuery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    query = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, index=True)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('search_queries', lazy=True))
