@@ -22,6 +22,23 @@ from django.contrib.sitemaps import Sitemap
 from app.sitemaps import BlogPostSitemap
 from Backend.app.viwes import app
 
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="API Documentation",
+      default_version='v1',
+      description="API documentation for the project",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@project.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
 sitemaps = {
     'blog': BlogPostSitemap,
 }
@@ -31,4 +48,6 @@ urlpatterns = [
     path('', views.index, name='index', app=app),  # Example view from views.py
     path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap', app=app),
     path('post/<slug:slug>/', views.post_detail, name='post_detail', app=app),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

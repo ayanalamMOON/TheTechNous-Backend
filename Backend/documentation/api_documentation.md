@@ -299,3 +299,77 @@ from app.activity_logger import log_user_activity
 
 log_user_activity(user_id=1, activity="User logged in")
 ```
+
+## CORS Settings
+
+To enable Cross-Origin Resource Sharing (CORS) in the backend, the following settings have been added to the Django settings file (`Backend/api/api/settings.py`):
+
+```python
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+```
+
+This configuration allows frontend applications hosted on `http://localhost:3000` and `http://127.0.0.1:3000` to access the API.
+
+## Examples of Using the API with Different JavaScript Libraries
+
+### Using Axios
+
+**Example:**
+
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api',
+});
+
+const getBlogPosts = async () => {
+  try {
+    const response = await api.get('/blog/post');
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getBlogPosts();
+```
+
+### Using Fetch
+
+**Example:**
+
+```javascript
+const getBlogPosts = async () => {
+  try {
+    const response = await fetch('http://localhost:8000/api/blog/post');
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getBlogPosts();
+```
+
+### Using jQuery
+
+**Example:**
+
+```javascript
+$.ajax({
+  url: 'http://localhost:8000/api/blog/post',
+  method: 'GET',
+  success: function(data) {
+    console.log(data);
+  },
+  error: function(error) {
+    console.error(error);
+  }
+});
+```

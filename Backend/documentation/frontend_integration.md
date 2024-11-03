@@ -342,3 +342,78 @@ deleteUser(userId, token)
    ```
 
 By following these steps, you can successfully integrate Celery for asynchronous tasks in your Django project.
+
+## Standardized API Responses
+
+To ensure that all API responses follow a consistent structure, the backend has been configured to return responses in a standardized format. This makes it easier for frontend developers to handle responses from different endpoints.
+
+### Example of Standardized API Response
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 1,
+    "title": "New Blog Post",
+    "content": "This is the content of the new blog post.",
+    "author": "john_doe",
+    "url": "/blog/post/1"
+  }
+}
+```
+
+**Error Response:**
+```json
+{
+  "status": "error",
+  "message": "An error occurred while processing your request."
+}
+```
+
+### Metadata in API Responses
+
+To help frontend developers manage data more effectively, metadata such as pagination information is included in the API responses.
+
+**Example of API Response with Metadata:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "title": "New Blog Post",
+      "content": "This is the content of the new blog post.",
+      "author": "john_doe",
+      "url": "/blog/post/1"
+    },
+    {
+      "id": 2,
+      "title": "Another Blog Post",
+      "content": "This is the content of another blog post.",
+      "author": "jane_doe",
+      "url": "/blog/post/2"
+    }
+  ],
+  "metadata": {
+    "page": 1,
+    "per_page": 10,
+    "total_pages": 5,
+    "total_items": 50
+  }
+}
+```
+
+## CORS Settings
+
+To enable Cross-Origin Resource Sharing (CORS) in the backend, the following settings have been added to the Django settings file (`Backend/api/api/settings.py`):
+
+```python
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+```
+
+This configuration allows frontend applications hosted on `http://localhost:3000` and `http://127.0.0.1:3000` to access the API.
