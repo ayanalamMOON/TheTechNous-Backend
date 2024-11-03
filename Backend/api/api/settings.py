@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'imagekit',
     'django.contrib.sitemaps',
     'django.contrib.sites',  # Site framework support
+    'channels',  # Django Channels
+    'rest_framework',  # Django Rest Framework
 ]
 
 MIDDLEWARE = [
@@ -75,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
-
+ASGI_APPLICATION = 'api.asgi.application'  # Django Channels
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -258,7 +260,12 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '1000/day'
-    }
+    },
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 # Input validation settings
@@ -284,3 +291,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+# Django Channels settings
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

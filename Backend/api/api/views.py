@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, viewsets
 from django.contrib.auth.models import User, Group
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Q
+from rest_framework import serializers
 
 class StandardizedResponse:
     @staticmethod
@@ -126,6 +127,75 @@ class FileUploadView(APIView):
 class AdvancedSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
-        results = User.objects.filter(Q(username__icontains=query) | Q(email__icontains=query))
+        results = User.objects.filter(Q(username__icontains=query) | Q(email__icontains(query)))
         data = [{"id": user.id, "username": user.username, "email": user.email} for user in results]
         return StandardizedResponse.success(data)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return StandardizedResponse.success(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return StandardizedResponse.success(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return StandardizedResponse.success(serializer.data, status_code=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return StandardizedResponse.success(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return StandardizedResponse.success({"message": "User deleted successfully"})
+
+class CustomPermission(IsAuthenticated):
+    def has_permission(self, request, view):
+        return super().has_permission(request, view) and request.user.is_active
+
+class CustomThrottle:
+    def allow_request(self, request, view):
+        # Implement custom throttling logic here
+        return True
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        return StandardizedResponse.success(
+            data,
+            metadata={
+                'page': self.page.number,
+                'page_size': self.page_size,
+                'total_pages': self.page.paginator.num_pages,
+                'total_items': self.page.paginator.count
+            }
+        )
