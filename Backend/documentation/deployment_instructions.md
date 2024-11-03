@@ -115,4 +115,49 @@ Before deploying the project, ensure you have the following prerequisites:
 
 3. **Test recovery procedures**: Regularly test your backup and recovery procedures to ensure you can restore your application in case of data loss or server failure.
 
+## WebSocket Configuration
+
+1. **Configure Django Channels**: Add the following configuration to your Django settings file (`Backend/api/api/settings.py`):
+   ```python
+   # Django Channels settings
+   CHANNEL_LAYERS = {
+       'default': {
+           'BACKEND': 'channels_redis.core.RedisChannelLayer',
+           'CONFIG': {
+               "hosts": [('127.0.0.1', 6379)],
+           },
+       },
+   }
+   ```
+
+2. **Install Django Channels**: Install Django Channels by adding it to your `requirements.txt` file:
+   ```bash
+   channels==3.0.3
+   ```
+
+3. **Update ASGI Configuration**: Update the `asgi.py` file to include the Channels configuration:
+   ```python
+   import os
+   import django
+   from channels.routing import get_default_application
+   from channels.routing import ProtocolTypeRouter, URLRouter
+   from channels.auth import AuthMiddlewareStack
+   from django.core.asgi import get_asgi_application
+   from channels.layers import get_channel_layer
+
+   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
+   django.setup()
+
+   application = ProtocolTypeRouter({
+       "http": get_asgi_application(),
+       "websocket": AuthMiddlewareStack(
+           URLRouter(
+               # Add your websocket URL routes here
+           )
+       ),
+   })
+
+   channel_layer = get_channel_layer()
+   ```
+
 By following these deployment instructions, you can successfully deploy TheTechNous project to a production environment.

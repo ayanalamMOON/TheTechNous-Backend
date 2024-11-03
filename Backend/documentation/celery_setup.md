@@ -75,4 +75,26 @@
     celery -A api worker --beat --loglevel=info
     ```
 
+## Using the `make_celery` function
+
+In the `Backend/api/celery.py` file, you can use the `make_celery` function to create a Celery instance. This function allows you to pass the Flask app instance to Celery, enabling better integration between Flask and Celery.
+
+Here is an example of how to use the `make_celery` function:
+
+```python
+import os
+from celery import Celery
+from Backend.app.viwes import app
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
+
+def make_celery(app):
+    celery = Celery('api', app=app)
+    celery.config_from_object('django.conf:settings', namespace='CELERY')
+    celery.autodiscover_tasks()
+    return celery
+
+celery_app = make_celery(app)
+```
+
 By following these steps, you have successfully set up Celery for asynchronous tasks and scheduled tasks in your Django project.
