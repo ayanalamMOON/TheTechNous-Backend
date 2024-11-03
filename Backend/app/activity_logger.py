@@ -2,6 +2,7 @@ from datetime import datetime
 from Backend.app.viwes import db
 from app.models import UserActivityLog
 from app import app
+from app import preprocess  # Import the preprocess module
 
 def log_user_activity(user_id, activity):
     """
@@ -14,6 +15,10 @@ def log_user_activity(user_id, activity):
     db.session.add(log)
     db.session.commit()
     app.logger.info(f"User {user_id} activity: {activity}")
+
+    # Call preprocessing functions after logging activities
+    preprocessed_data = preprocess.preprocess_activity_data()
+    app.logger.info(f"Preprocessed activity data: {preprocessed_data}")
 
 """
 Activity Logger
@@ -30,4 +35,3 @@ from app.activity_logger import log_user_activity
 
 log_user_activity(user_id=1, activity="User logged in")
 ```
-"""
