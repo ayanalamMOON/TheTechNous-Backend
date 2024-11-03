@@ -42,13 +42,11 @@ INSTALLED_APPS = [
     'django_meta',
     'imagekit',
     'django.contrib.sitemaps',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,8 +81,12 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
+        'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
+        'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
     }
 }
 
@@ -215,8 +217,12 @@ else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
+            'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
+            'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
+            'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
         }
     }
 
@@ -271,9 +277,3 @@ REQUIRED_ENV_VARS = [
 for var in REQUIRED_ENV_VARS:
     if var not in os.environ:
         raise EnvironmentError(f"Required environment variable {var} is not set.")
-
-# CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]

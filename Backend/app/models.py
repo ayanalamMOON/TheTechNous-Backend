@@ -20,15 +20,16 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
     mfa_secret = db.Column(db.String(32), nullable=True)
+    salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
 
     def set_password(self, password):
         if not self.validate_password(password):
             raise ValueError("Password does not meet the required criteria")
-        self.password_hash = ph.hash(password)
+        self.password_hash = ph.hash(password + self.salt)
 
     def check_password(self, password):
         try:
-            return ph.verify(self.password_hash, password)
+            return ph.verify(self.password_hash, password + self.salt)
         except:
             return False
 
@@ -70,7 +71,7 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable= False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable= False, index=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
@@ -81,7 +82,7 @@ class BlogPost(db.Model):
 
 class UserActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
     activity = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
