@@ -49,6 +49,31 @@ def create_post():
 @blog.route('/post/<int:post_id>', methods=['PUT'])
 @jwt_required()
 def update_post(post_id):
+    """
+    Update an existing blog post.
+
+    **Endpoint:** `PUT /post/<int:post_id>`
+
+    **Headers:**
+    ```http
+    Authorization: Bearer your_jwt_token
+    ```
+
+    **Request:**
+    ```json
+    {
+      "title": "Updated Blog Post",
+      "content": "This is the updated content of the blog post."
+    }
+    ```
+
+    **Response:**
+    ```json
+    {
+      "msg": "Post Updated Successfully"
+    }
+    ```
+    """
     current_user_id = get_jwt_identity()
     post = BlogPost.query.get(post_id)
 
@@ -76,9 +101,26 @@ def update_post(post_id):
 
     return jsonify({"msg": "Post Updated Successfully"}), 200
 
-@blog.route('/post/<int:post_id>', methods['DELETE'])
+@blog.route('/post/<int:post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
+    """
+    Delete an existing blog post.
+
+    **Endpoint:** `DELETE /post/<int:post_id>`
+
+    **Headers:**
+    ```http
+    Authorization: Bearer your_jwt_token
+    ```
+
+    **Response:**
+    ```json
+    {
+      "msg": "Post Deleted Successfully"
+    }
+    ```
+    """
     current_user_id = get_jwt_identity()
     post = BlogPost.query.get(post_id)
 
@@ -102,6 +144,24 @@ def delete_post(post_id):
 @blog.route('/search', methods=['GET'])
 @cache.cached(timeout=60)
 def search_posts():
+    """
+    Search for blog posts.
+
+    **Endpoint:** `GET /search?q={query}`
+
+    **Response:**
+    ```json
+    [
+      {
+        "id": 1,
+        "title": "New Blog Post",
+        "content": "This is the content of the new blog post.",
+        "author": "john_doe",
+        "url": "/blog/post/1"
+      }
+    ]
+    ```
+    """
     query = request.args.get('q', '')
     posts = BlogPost.query.filter(BlogPost.title.contains(query) | BlogPost.content.contains(query)).all()
     app.logger.info(f"Search query: {query} - Found {len(posts)} posts")

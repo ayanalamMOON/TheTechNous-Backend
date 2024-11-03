@@ -16,6 +16,34 @@ def is_admin(user_id):
 @admin.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
+    """
+    Retrieve a list of users.
+
+    **Endpoint:** `GET /users`
+
+    **Headers:**
+    ```http
+    Authorization: Bearer your_jwt_token
+    ```
+
+    **Response:**
+    ```json
+    [
+      {
+        "id": 1,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "is_admin": false
+      },
+      {
+        "id": 2,
+        "username": "jane_doe",
+        "email": "jane@example.com",
+        "is_admin": true
+      }
+    ]
+    ```
+    """
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
         return jsonify({'msg': 'Admin Access required'}), 403
@@ -30,6 +58,30 @@ def get_users():
 @admin.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
+    """
+    Update an existing user.
+
+    **Endpoint:** `PUT /users/<int:user_id>`
+
+    **Headers:**
+    ```http
+    Authorization: Bearer your_jwt_token
+    ```
+
+    **Request:**
+    ```json
+    {
+      "is_admin": true
+    }
+    ```
+
+    **Response:**
+    ```json
+    {
+      "msg": "User updated successfully"
+    }
+    ```
+    """
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
         return jsonify({'msg': 'Admin Access required'}), 403
@@ -48,6 +100,23 @@ def update_user(user_id):
 @admin.route('/users/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
+    """
+    Delete an existing user.
+
+    **Endpoint:** `DELETE /users/<int:user_id>`
+
+    **Headers:**
+    ```http
+    Authorization: Bearer your_jwt_token
+    ```
+
+    **Response:**
+    ```json
+    {
+      "msg": "User deleted successfully"
+    }
+    ```
+    """
     current_user_id = get_jwt_identity()
     if not is_admin(current_user_id):
         return jsonify({'msg': 'Admin Access required'}), 403
