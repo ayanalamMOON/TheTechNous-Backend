@@ -4,8 +4,8 @@ from argon2 import PasswordHasher
 import re
 from cryptography.fernet import Fernet
 import os
+from Backend.app.viwes import db
 
-db = SQLAlchemy()
 ph = PasswordHasher()
 
 # Generate a key for encryption

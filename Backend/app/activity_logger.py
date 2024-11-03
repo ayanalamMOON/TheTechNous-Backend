@@ -1,5 +1,6 @@
 from datetime import datetime
-from app.models import db, UserActivityLog
+from Backend.app.viwes import db
+from app.models import UserActivityLog
 from app import app
 
 def log_user_activity(user_id, activity):
