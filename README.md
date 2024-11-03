@@ -3,7 +3,7 @@ Web site for The TechNous club
 
 ## Project Overview
 
-TheTechNous is a web application designed for The TechNous club. It provides a platform for members to share and discuss various topics related to technology.
+This is a Backend for the main website of our TechNous club .
 
 ## Setup Instructions
 
