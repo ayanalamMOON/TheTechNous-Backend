@@ -14,6 +14,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers
+import matplotlib.pyplot as plt
+import io
+import base64
 
 class StandardizedResponse:
     @staticmethod
@@ -199,3 +202,42 @@ class CustomPagination(PageNumberPagination):
                 'total_items': self.page.paginator.count
             }
         )
+
+class ProgressTrackingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Example data, replace with actual data retrieval logic
+        progress_data = {
+            "tasks_completed": 5,
+            "assignments_completed": 3,
+            "projects_completed": 2
+        }
+        return StandardizedResponse.success(progress_data)
+
+class ProgressVisualizationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Example data, replace with actual data retrieval logic
+        progress_data = {
+            "tasks_completed": 5,
+            "assignments_completed": 3,
+            "projects_completed": 2
+        }
+
+        fig, ax = plt.subplots()
+        categories = list(progress_data.keys())
+        values = list(progress_data.values())
+        ax.bar(categories, values)
+        ax.set_xlabel('Categories')
+        ax.set_ylabel('Count')
+        ax.set_title('Student Progress')
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        buf.close()
+
+        return StandardizedResponse.success({"progress_chart": image_base64})

@@ -15,6 +15,32 @@ def log_user_activity(user_id, activity):
     db.session.commit()
     app.logger.info(f"User {user_id} activity: {activity}")
 
+def log_login_time(user_id):
+    """
+    Log user login time.
+
+    :param user_id: The ID of the user.
+    """
+    log_user_activity(user_id, "User logged in")
+
+def log_completed_task(user_id, task_id):
+    """
+    Log user completed task.
+
+    :param user_id: The ID of the user.
+    :param task_id: The ID of the completed task.
+    """
+    log_user_activity(user_id, f"Completed task {task_id}")
+
+def log_interaction(user_id, interaction):
+    """
+    Log user interaction.
+
+    :param user_id: The ID of the user.
+    :param interaction: The interaction description.
+    """
+    log_user_activity(user_id, f"Interaction: {interaction}")
+
 """
 Activity Logger
 
