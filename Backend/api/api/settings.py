@@ -146,24 +146,15 @@ logging.config.dictConfig({
             'format': '[{asctime}] {levelname} {name} {message}',
             'style': '{',
         },
-        'detailed': {
-            'format': '[{asctime}] {levelname} {name} {module} {message}',
-            'style': '{',
-        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'django.log',
-            'formatter': 'detailed',
-        },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': LOGLEVEL,
     },
 })
@@ -263,3 +254,18 @@ REST_FRAMEWORK = {
 
 # Input validation settings
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5 MB
+
+# Ensure all necessary environment variables are defined and accessible
+REQUIRED_ENV_VARS = [
+    'DJANGO_SECRET_KEY',
+    'DJANGO_DEBUG',
+    'DJANGO_ALLOWED_HOSTS',
+    'DJANGO_LOGLEVEL',
+    'DJANGO_ENVIRONMENT',
+    'CELERY_BROKER_URL',
+    'CELERY_RESULT_BACKEND'
+]
+
+for var in REQUIRED_ENV_VARS:
+    if var not in os.environ:
+        raise EnvironmentError(f"Required environment variable {var} is not set.")

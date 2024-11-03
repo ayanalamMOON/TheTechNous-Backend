@@ -20,14 +20,15 @@ from app import views
 from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.sitemaps import Sitemap
 from app.sitemaps import BlogPostSitemap
+from Backend.app.viwes import app
 
 sitemaps = {
     'blog': BlogPostSitemap,
 }
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.index, name='index'),  # Example view from views.py
-    path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('post/<slug:slug>/', views.post_detail, name='post_detail'),
+    path('admin/', admin.site.urls, app=app),
+    path('', views.index, name='index', app=app),  # Example view from views.py
+    path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap', app=app),
+    path('post/<slug:slug>/', views.post_detail, name='post_detail', app=app),
 ]

@@ -2,8 +2,9 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, User
 from app.activity_logger import log_user_activity
+from app import app
 
-admin = Blueprint('admin', __name__)
+admin = Blueprint('admin', __name__, app=app)
 
 @admin.route('/')
 def admin_home():
@@ -19,12 +20,8 @@ def get_users():
     """
     Retrieve a list of users.
 
-    **Endpoint:** `GET /users`
-
     **Headers:**
-    ```http
     Authorization: Bearer your_jwt_token
-    ```
 
     **Response:**
     ```json
@@ -61,12 +58,8 @@ def update_user(user_id):
     """
     Update an existing user.
 
-    **Endpoint:** `PUT /users/<int:user_id>`
-
     **Headers:**
-    ```http
     Authorization: Bearer your_jwt_token
-    ```
 
     **Request:**
     ```json
@@ -103,12 +96,8 @@ def delete_user(user_id):
     """
     Delete an existing user.
 
-    **Endpoint:** `DELETE /users/<int:user_id>`
-
     **Headers:**
-    ```http
     Authorization: Bearer your_jwt_token
-    ```
 
     **Response:**
     ```json

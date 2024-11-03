@@ -232,74 +232,70 @@ Authorization: Bearer your_jwt_token
 }
 ```
 
-## Activity Logging
-
-### Log User Activity
-
-**Endpoint:** `POST /activity/log`
-
-**Headers:**
-```http
-Authorization: Bearer your_jwt_token
-```
-
-**Request:**
-```json
-{
-  "user_id": 1,
-  "activity": "User logged in"
-}
-```
-
-**Response:**
-```json
-{
-  "msg": "Activity logged successfully"
-}
-```
-
 ## Error Handling
 
-### Handle HTTP Exceptions
+### HTTP Exceptions
 
-**Endpoint:** `GET /error/handle`
+**Description:**
+Handles various HTTP exceptions and returns appropriate error messages and status codes.
 
-**Response:**
+**Example:**
 ```json
 {
-  "error": "An Unexpected error occurred"
+  "error": "Resource not found"
 }
 ```
 
-### Handle Database Errors
+### Database Errors
 
-**Endpoint:** `GET /error/database`
+**Description:**
+Handles database errors and returns appropriate error messages and status codes.
 
-**Response:**
+**Example:**
 ```json
 {
   "error": "A database error occurred"
 }
 ```
 
-### Handle Validation Errors
+### Validation Errors
 
-**Endpoint:** `GET /error/validation`
+**Description:**
+Handles validation errors and returns appropriate error messages and status codes.
 
-**Response:**
+**Example:**
 ```json
 {
   "error": "A validation error occurred"
 }
 ```
 
-### Handle Authentication Errors
+### Authentication Errors
 
-**Endpoint:** `GET /error/authentication`
+**Description:**
+Handles authentication errors and returns appropriate error messages and status codes.
 
-**Response:**
+**Example:**
 ```json
 {
   "error": "An authentication error occurred"
 }
+```
+
+## Activity Logging
+
+### Log User Activity
+
+**Description:**
+Logs user activities in the application.
+
+**Usage:**
+1. Import the `log_user_activity` function.
+2. Call the function with the user ID and activity description.
+
+**Example:**
+```python
+from app.activity_logger import log_user_activity
+
+log_user_activity(user_id=1, activity="User logged in")
 ```

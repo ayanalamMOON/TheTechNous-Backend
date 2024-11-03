@@ -5,8 +5,9 @@ from flask_caching import Cache
 from marshmallow import ValidationError
 from app.schemas import blog_post_schema
 from app.activity_logger import log_user_activity
+from app import app
 
-blog = Blueprint('blog', __name__)
+blog = Blueprint('blog', __name__, app=app)
 cache = Cache(config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': 'redis://localhost:6379/1'})
 
 def can_post(user_id):
@@ -52,12 +53,8 @@ def update_post(post_id):
     """
     Update an existing blog post.
 
-    **Endpoint:** `PUT /post/<int:post_id>`
-
     **Headers:**
-    ```http
     Authorization: Bearer your_jwt_token
-    ```
 
     **Request:**
     ```json
@@ -107,12 +104,8 @@ def delete_post(post_id):
     """
     Delete an existing blog post.
 
-    **Endpoint:** `DELETE /post/<int:post_id>`
-
     **Headers:**
-    ```http
     Authorization: Bearer your_jwt_token
-    ```
 
     **Response:**
     ```json
@@ -145,9 +138,10 @@ def delete_post(post_id):
 @cache.cached(timeout=60)
 def search_posts():
     """
-    Search for blog posts.
+    Search for blog posts by title or content.
 
-    **Endpoint:** `GET /search?q={query}`
+    **Request:**
+    `GET /blog/search?q={query}`
 
     **Response:**
     ```json
