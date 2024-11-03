@@ -11,8 +11,8 @@ This document provides detailed information about the API endpoints, request/res
 **Request:**
 ```json
 {
-  "username": "john_doe",
-  "email": "john@example.com",
+  "username": "Sakura",
+  "email": "sakura@example.com",
   "password": "password123"
 }
 ```
@@ -32,7 +32,7 @@ This document provides detailed information about the API endpoints, request/res
 **Request:**
 ```json
 {
-  "username": "john_doe",
+  "username": "Sakura",
   "password": "password123",
   "otp": "123456"  # If MFA is enabled
 }
@@ -57,8 +57,8 @@ Authorization: Bearer your_jwt_token
 **Response:**
 ```json
 {
-  "username": "john_doe",
-  "email": "john@example.com",
+  "username": "Sakura",
+  "email": "sakura@example.com",
   "is_admin": false
 }
 ```
@@ -76,7 +76,7 @@ Authorization: Bearer your_jwt_token
     "id": 1,
     "title": "New Blog Post",
     "content": "This is the content of the new blog post.",
-    "author": "john_doe",
+    "author": "Sakura",
     "url": "/blog/post/1"
   }
 ]
@@ -158,7 +158,7 @@ Authorization: Bearer your_jwt_token
     "id": 1,
     "title": "New Blog Post",
     "content": "This is the content of the new blog post.",
-    "author": "john_doe",
+    "author": "Sakura",
     "url": "/blog/post/1"
   }
 ]
@@ -180,14 +180,14 @@ Authorization: Bearer your_jwt_token
 [
   {
     "id": 1,
-    "username": "john_doe",
-    "email": "john@example.com",
+    "username": "Sakura",
+    "email": "sakura@example.com",
     "is_admin": false
   },
   {
     "id": 2,
-    "username": "jane_doe",
-    "email": "jane@example.com",
+    "username": "Hinata",
+    "email": "hinata@example.com",
     "is_admin": true
   }
 ]
@@ -248,12 +248,12 @@ Authorization: Bearer your_jwt_token
 [
   {
     "id": 1,
-    "username": "john_doe",
+    "username": "Sakura",
     "roles": ["admin", "editor"]
   },
   {
     "id": 2,
-    "username": "jane_doe",
+    "username": "Hinata",
     "roles": ["editor"]
   }
 ]
@@ -389,7 +389,7 @@ Authorization: Bearer your_jwt_token
 
 **Request:**
 ```http
-GET /search/?q=john
+GET /search/?q=sakura
 ```
 
 **Response:**
@@ -397,13 +397,13 @@ GET /search/?q=john
 [
   {
     "id": 1,
-    "username": "john_doe",
-    "email": "john@example.com"
+    "username": "Sakura",
+    "email": "sakura@example.com"
   },
   {
     "id": 2,
-    "username": "john_smith",
-    "email": "john.smith@example.com"
+    "username": "Sakura Haruno",
+    "email": "sakura.haruno@example.com"
   }
 ]
 ```
@@ -566,12 +566,12 @@ Authorization: Bearer your_jwt_token
 [
   {
     "id": 1,
-    "username": "john_doe",
+    "username": "Sakura",
     "roles": ["admin", "editor"]
   },
   {
     "id": 2,
-    "username": "jane_doe",
+    "username": "Hinata",
     "roles": ["editor"]
   }
 ]
@@ -602,6 +602,107 @@ Authorization: Bearer your_jwt_token
 ```
 
 ## Notification Management
+
+### Get Notifications
+
+**Endpoint:** `GET /notifications/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "message": "New comment on your post",
+    "timestamp": "2023-08-01T12:34:56Z"
+  },
+  {
+    "id": 2,
+    "message": "Your post has been approved",
+    "timestamp": "2023-08-02T09:21:45Z"
+  }
+]
+```
+
+### Send Notification
+
+**Endpoint:** `POST /notifications/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Request:**
+```json
+{
+  "message": "New comment on your post"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Notification sent successfully"
+}
+```
+
+## UserRoleView
+
+### Get User Roles
+
+**Endpoint:** `GET /roles/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "username": "Sakura",
+    "roles": ["admin", "editor"]
+  },
+  {
+    "id": 2,
+    "username": "Hinata",
+    "roles": ["editor"]
+  }
+]
+```
+
+### Add User Role
+
+**Endpoint:** `POST /roles/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Request:**
+```json
+{
+  "user_id": 1,
+  "role_name": "editor"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Role added successfully"
+}
+```
+
+## NotificationView
 
 ### Get Notifications
 

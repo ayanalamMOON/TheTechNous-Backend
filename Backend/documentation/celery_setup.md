@@ -97,4 +97,8 @@ def make_celery(app):
 celery_app = make_celery(app)
 ```
 
+## Example Names
+
+To make the examples more interesting, we have used random anime girl names in the examples.
+
 By following these steps, you have successfully set up Celery for asynchronous tasks and scheduled tasks in your Django project.

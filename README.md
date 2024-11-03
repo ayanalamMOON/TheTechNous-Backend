@@ -50,8 +50,8 @@ To set up the project locally, follow these steps:
 To register a new user, send a POST request to the `/auth/register` endpoint with the following JSON payload:
 ```json
 {
-  "username": "john_doe",
-  "email": "john@example.com",
+  "username": "Sakura",
+  "email": "sakura@example.com",
   "password": "password123"
 }
 ```
@@ -60,7 +60,7 @@ To register a new user, send a POST request to the `/auth/register` endpoint wit
 To log in, send a POST request to the `/auth/login` endpoint with the following JSON payload:
 ```json
 {
-  "username": "john_doe",
+  "username": "Sakura",
   "password": "password123",
   "otp": "123456"  # If MFA is enabled
 }

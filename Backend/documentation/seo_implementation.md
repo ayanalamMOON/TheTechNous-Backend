@@ -158,3 +158,7 @@ META_USE_OG_PROPERTIES = True
 ## Conclusion
 
 By following these best practices, you can improve the SEO of your Django views and help search engines better understand and index your content.
+
+## Example Names
+
+To make the examples more interesting, we have used random anime girl names in the examples.

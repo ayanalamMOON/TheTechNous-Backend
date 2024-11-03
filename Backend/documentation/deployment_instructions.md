@@ -160,4 +160,8 @@ Before deploying the project, ensure you have the following prerequisites:
    channel_layer = get_channel_layer()
    ```
 
+## Example Names
+
+To make the examples more interesting, we have used random anime girl names in the examples.
+
 By following these deployment instructions, you can successfully deploy TheTechNous project to a production environment.
