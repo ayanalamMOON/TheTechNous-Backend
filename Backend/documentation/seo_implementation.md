@@ -144,6 +144,17 @@ Ensure your website is mobile-friendly by using responsive design techniques in 
 
 Ensure your website has a fast loading time by optimizing your code, using caching, and serving static files efficiently.
 
+## 10. SEO Settings in Django
+
+To further enhance the SEO of your Django application, you can configure the following settings in your `settings.py` file:
+
+```python
+# SEO settings
+META_SITE_PROTOCOL = 'https'
+META_USE_SITES = True
+META_USE_OG_PROPERTIES = True
+```
+
 ## Conclusion
 
 By following these best practices, you can improve the SEO of your Django views and help search engines better understand and index your content.

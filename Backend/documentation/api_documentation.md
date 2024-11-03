@@ -549,3 +549,104 @@ $.ajax({
   }
 });
 ```
+
+## User Role Management
+
+### Get User Roles
+
+**Endpoint:** `GET /roles/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "username": "john_doe",
+    "roles": ["admin", "editor"]
+  },
+  {
+    "id": 2,
+    "username": "jane_doe",
+    "roles": ["editor"]
+  }
+]
+```
+
+### Add User Role
+
+**Endpoint:** `POST /roles/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Request:**
+```json
+{
+  "user_id": 1,
+  "role_name": "editor"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Role added successfully"
+}
+```
+
+## Notification Management
+
+### Get Notifications
+
+**Endpoint:** `GET /notifications/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "message": "New comment on your post",
+    "timestamp": "2023-08-01T12:34:56Z"
+  },
+  {
+    "id": 2,
+    "message": "Your post has been approved",
+    "timestamp": "2023-08-02T09:21:45Z"
+  }
+]
+```
+
+### Send Notification
+
+**Endpoint:** `POST /notifications/`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Request:**
+```json
+{
+  "message": "New comment on your post"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Notification sent successfully"
+}
+```

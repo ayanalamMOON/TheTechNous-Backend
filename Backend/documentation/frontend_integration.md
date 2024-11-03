@@ -417,3 +417,51 @@ CORS_ALLOWED_ORIGINS = [
 ```
 
 This configuration allows frontend applications hosted on `http://localhost:3000` and `http://127.0.0.1:3000` to access the API.
+
+## Custom Pagination
+
+The backend uses a custom pagination class to standardize the pagination of API responses. This ensures that all paginated responses follow a consistent structure, making it easier for frontend developers to handle paginated data.
+
+### CustomPagination Class
+
+The `CustomPagination` class is defined in `Backend/api/api/views.py` and extends the `PageNumberPagination` class from Django REST framework. It overrides the `get_paginated_response` method to return a standardized response format.
+
+```python
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            'status': 'success',
+            'data': data,
+            'metadata': {
+                'page': self.page.number,
+                'page_size': self.page_size,
+                'total_pages': self.page.paginator.num_pages,
+                'total_items': self.page.paginator.count
+            }
+        })
+```
+
+### Using CustomPagination in API Views
+
+To use the `CustomPagination` class in your API views, set it as the `pagination_class` in your viewsets or API views.
+
+```python
+from rest_framework import viewsets
+from .models import YourModel
+from .serializers import YourModelSerializer
+from .pagination import CustomPagination
+
+class YourModelViewSet(viewsets.ModelViewSet):
+    queryset = YourModel.objects.all()
+    serializer_class = YourModelSerializer
+    pagination_class = CustomPagination
+```
+
+By using the `CustomPagination` class, you ensure that all paginated API responses follow a consistent structure, making it easier for frontend developers to handle paginated data.
