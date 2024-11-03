@@ -21,6 +21,7 @@ class User(db.Model):
     roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
     mfa_secret = db.Column(db.String(32), nullable=True)
     salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
+    personalized_feedback = db.relationship('PersonalizedFeedback', backref='user', lazy=True)
 
     def set_password(self, password):
         if not self.validate_password(password):
@@ -118,6 +119,14 @@ class SearchQuery(db.Model):
 
     user = db.relationship('User', backref=db.backref('search_queries', lazy=True))
 
+class PersonalizedFeedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    feedback = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('personalized_feedbacks', lazy=True))
+
 # Django ORM optimizations
 class OptimizedUser(db.Model):
     __tablename__ = 'optimized_user'
@@ -150,7 +159,7 @@ class OptimizedUser(db.Model):
             return False
         if not re.search(r"[0-9]", password):
             return False
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        if not re.search r"[!@#$%^&*(),.?\":{}|<>]", password):
             return False
         return True
 

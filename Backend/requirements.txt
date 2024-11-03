@@ -16,3 +16,4 @@ kombu==5.2.3
 black==24.3.0
 coverage==6.2
 pytest==6.2.5
+scikit-learn==0.24.2

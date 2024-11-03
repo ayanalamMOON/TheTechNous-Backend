@@ -37,3 +37,7 @@ api.register_blueprint(media, url_prefix='/media')
 # Advanced search functionality
 from app.routes.search import search
 api.register_blueprint(search, url_prefix='/search')
+
+# Personalized feedback system
+from app.routes.personalized_feedback import personalized_feedback
+api.register_blueprint(personalized_feedback, url_prefix='/personalized_feedback')
