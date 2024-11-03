@@ -231,3 +231,75 @@ Authorization: Bearer your_jwt_token
   "msg": "User deleted successfully"
 }
 ```
+
+## Activity Logging
+
+### Log User Activity
+
+**Endpoint:** `POST /activity/log`
+
+**Headers:**
+```http
+Authorization: Bearer your_jwt_token
+```
+
+**Request:**
+```json
+{
+  "user_id": 1,
+  "activity": "User logged in"
+}
+```
+
+**Response:**
+```json
+{
+  "msg": "Activity logged successfully"
+}
+```
+
+## Error Handling
+
+### Handle HTTP Exceptions
+
+**Endpoint:** `GET /error/handle`
+
+**Response:**
+```json
+{
+  "error": "An Unexpected error occurred"
+}
+```
+
+### Handle Database Errors
+
+**Endpoint:** `GET /error/database`
+
+**Response:**
+```json
+{
+  "error": "A database error occurred"
+}
+```
+
+### Handle Validation Errors
+
+**Endpoint:** `GET /error/validation`
+
+**Response:**
+```json
+{
+  "error": "A validation error occurred"
+}
+```
+
+### Handle Authentication Errors
+
+**Endpoint:** `GET /error/authentication`
+
+**Response:**
+```json
+{
+  "error": "An authentication error occurred"
+}
+```

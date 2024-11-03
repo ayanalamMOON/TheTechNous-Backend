@@ -146,15 +146,24 @@ logging.config.dictConfig({
             'format': '[{asctime}] {levelname} {name} {message}',
             'style': '{',
         },
+        'detailed': {
+            'format': '[{asctime}] {levelname} {name} {module} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django.log',
+            'formatter': 'detailed',
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': LOGLEVEL,
     },
 })
