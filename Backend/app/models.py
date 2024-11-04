@@ -1,37 +1,58 @@
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import check_password_hash
-from argon2 import PasswordHasher
+from djongo import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 import re
 from cryptography.fernet import Fernet
 import os
-from Backend.app.viwes import db
-
-ph = PasswordHasher()
 
 # Generate a key for encryption
 key = os.getenv('ENCRYPTION_KEY', Fernet.generate_key())
 cipher_suite = Fernet(key)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
-    mfa_secret = db.Column(db.String(32), nullable=True)
-    salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError(_('The Email field must be set'))
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(_('Superuser must have is_superuser=True.'))
+
+        return self.create_user(username, email, password, **extra_fields)
+
+class User(AbstractBaseUser):
+    id = models.ObjectIdField(primary_key=True)
+    username = models.CharField(max_length=64, unique=True, null=False)
+    email = models.EmailField(max_length=120, unique=True, null=False)
+    password = models.CharField(max_length=128, null=False)
+    is_admin = models.BooleanField(default=False)
+    roles = models.ArrayReferenceField(to='Role', on_delete=models.CASCADE)
+    mfa_secret = models.CharField(max_length=32, null=True)
+    salt = models.CharField(max_length=32, null=False, default=os.urandom(16).hex())
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     def set_password(self, password):
         if not self.validate_password(password):
-            raise ValueError("Password does not meet the required criteria")
-        self.password_hash = ph.hash(password + self.salt)
+            raise ValidationError("Password does not meet the required criteria")
+        self.password = self.make_password(password + self.salt)
 
     def check_password(self, password):
-        try:
-            return ph.verify(self.password_hash, password + self.salt)
-        except:
-            return False
+        return self.check_password(password + self.salt)
 
     def validate_password(self, password):
         if len(password) < 8:
@@ -58,198 +79,52 @@ class User(db.Model):
     def get_email(self):
         return self.decrypt_data(self.email)
 
-class Role(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+class Role(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    name = models.CharField(max_length=64, unique=True)
 
-class UserRoles(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete='CASCADE'))
+class UserRoles(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    user = models.ReferenceField(User, on_delete=models.CASCADE)
+    role = models.ReferenceField(Role, on_delete=models.CASCADE)
 
-class BlogPost(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable= False, index=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-
-    author = db.relationship('User', backref=db.backref('blog_posts', lazy=True))
+class BlogPost(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    title = models.CharField(max_length=200, null=False)
+    content = models.TextField(null=False)
+    author = models.ReferenceField(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         return f"/blog/post/{self.id}"
 
-class UserActivityLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
-    activity = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+class UserActivityLog(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    user = models.ReferenceField(User, on_delete=models.CASCADE)
+    activity = models.CharField(max_length=255, null=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-    user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
+class Notification(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    user = models.ReferenceField(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=255, null=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-class Notification(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
-    message = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+class SocialMediaShare(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    post = models.ReferenceField(BlogPost, on_delete=models.CASCADE)
+    platform = models.CharField(max_length=64, null=False)
+    shared_at = models.DateTimeField(auto_now_add=True)
 
-    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+class MediaFile(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    file_name = models.CharField(max_length=255, null=False)
+    file_url = models.CharField(max_length=255, null=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
-class SocialMediaShare(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('blog_post.id'), nullable=False, index=True)
-    platform = db.Column(db.String(64), nullable=False)
-    shared_at = db.Column(db.DateTime, server_default=db.func.now())
-
-    post = db.relationship('BlogPost', backref=db.backref('social_shares', lazy=True))
-
-class MediaFile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(255), nullable=False)
-    file_url = db.Column(db.String(255), nullable=False)
-    uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
-
-class SearchQuery(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    query = db.Column(db.String(255), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, index=True)
-    timestamp = db.Column(db.DateTime, server_default=db.func.now())
-
-    user = db.relationship('User', backref=db.backref('search_queries', lazy=True))
-
-# Django ORM optimizations
-class OptimizedUser(db.Model):
-    __tablename__ = 'optimized_user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    roles = db.relationship('Role', secondary='user_roles', backref=db.backref('optimized_users', lazy='dynamic'))
-    mfa_secret = db.Column(db.String(32), nullable=True)
-    salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
-
-    def set_password(self, password):
-        if not self.validate_password(password):
-            raise ValueError("Password does not meet the required criteria")
-        self.password_hash = ph.hash(password + self.salt)
-
-    def check_password(self, password):
-        try:
-            return ph.verify(self.password_hash, password + self.salt)
-        except:
-            return False
-
-    def validate_password(self, password):
-        if len(password) < 8:
-            return False
-        if not re.search(r"[A-Z]", password):
-            return False
-        if not re.search(r"[a-z]", password):
-            return False
-        if not re.search(r"[0-9]", password):
-            return False
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-            return False
-        return True
-
-    def encrypt_data(self, data):
-        return cipher_suite.encrypt(data.encode()).decode()
-
-    def decrypt_data(self, encrypted_data):
-        return cipher_suite.decrypt(encrypted_data.encode()).decode()
-
-    def set_email(self, email):
-        self.email = self.encrypt_data(email)
-
-    def get_email(self):
-        return self.decrypt_data(self.email)
-
-    @classmethod
-    def get_users_with_roles(cls):
-        return cls.query.options(db.joinedload(cls.roles)).all()
-
-    @classmethod
-    def get_user_with_notifications(cls, user_id):
-        return cls.query.options(db.joinedload(cls.notifications)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_social_shares(cls, user_id):
-        return cls.query.options(db.joinedload(cls.social_shares)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_media_files(cls, user_id):
-        return cls.query.options(db.joinedload(cls.media_files)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_search_queries(cls, user_id):
-        return cls.query.options(db.joinedload(cls.search_queries)).filter_by(id=user_id).first()
-
-# Database indexing and caching strategies
-class IndexedUser(db.Model):
-    __tablename__ = 'indexed_user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False, index=True)
-    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(128), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    roles = db.relationship('Role', secondary='user_roles', backref=db.backref('indexed_users', lazy='dynamic'))
-    mfa_secret = db.Column(db.String(32), nullable=True)
-    salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
-
-    def set_password(self, password):
-        if not self.validate_password(password):
-            raise ValueError("Password does not meet the required criteria")
-        self.password_hash = ph.hash(password + self.salt)
-
-    def check_password(self, password):
-        try:
-            return ph.verify(self.password_hash, password + self.salt)
-        except:
-            return False
-
-    def validate_password(self, password):
-        if len(password) < 8:
-            return False
-        if not re.search(r"[A-Z]", password):
-            return False
-        if not re.search(r"[a-z]", password):
-            return False
-        if not re.search(r"[0-9]", password):
-            return False
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-            return False
-        return True
-
-    def encrypt_data(self, data):
-        return cipher_suite.encrypt(data.encode()).decode()
-
-    def decrypt_data(self, encrypted_data):
-        return cipher_suite.decrypt(encrypted_data.encode()).decode()
-
-    def set_email(self, email):
-        self.email = self.encrypt_data(email)
-
-    def get_email(self):
-        return self.decrypt_data(self.email)
-
-    @classmethod
-    def get_users_with_roles(cls):
-        return cls.query.options(db.joinedload(cls.roles)).all()
-
-    @classmethod
-    def get_user_with_notifications(cls, user_id):
-        return cls.query.options(db.joinedload(cls.notifications)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_social_shares(cls, user_id):
-        return cls.query.options(db.joinedload(cls.social_shares)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_media_files(cls, user_id):
-        return cls.query.options(db.joinedload(cls.media_files)).filter_by(id=user_id).first()
-
-    @classmethod
-    def get_user_with_search_queries(cls, user_id):
-        return cls.query.options(db.joinedload(cls.search_queries)).filter_by(id=user_id).first()
+class SearchQuery(models.Model):
+    id = models.ObjectIdField(primary_key=True)
+    query = models.CharField(max_length=255, null=False)
+    user = models.ReferenceField(User, on_delete=models.CASCADE, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

@@ -7,7 +7,7 @@ This document provides detailed deployment instructions for TheTechNous project,
 Before deploying the project, ensure you have the following prerequisites:
 
 1. **Python 3.8 or higher**: Install Python from the official website: [Python Downloads](https://www.python.org/downloads/)
-2. **PostgreSQL**: Install PostgreSQL from the official website: [PostgreSQL Downloads](https://www.postgresql.org/download/)
+2. **MongoDB**: Install MongoDB from the official website: [MongoDB Downloads](https://www.mongodb.com/try/download/community)
 3. **Redis**: Install Redis from the official website: [Redis Downloads](https://redis.io/download)
 4. **Celery**: Install Celery by adding it to your `requirements.txt` file.
 
@@ -47,11 +47,15 @@ Before deploying the project, ensure you have the following prerequisites:
 
 ## Database Setup
 
-1. **Create the PostgreSQL database**:
-   ```sql
-   CREATE DATABASE your_db_name;
-   CREATE USER your_db_user WITH PASSWORD 'your_db_password';
-   GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_db_user;
+1. **Create the MongoDB database**:
+   ```bash
+   mongo
+   use your_db_name
+   db.createUser({
+     user: "your_db_user",
+     pwd: "your_db_password",
+     roles: [{ role: "readWrite", db: "your_db_name" }]
+   })
    ```
 
 2. **Apply database migrations**:
@@ -109,7 +113,7 @@ Before deploying the project, ensure you have the following prerequisites:
 
 ## Backup and Recovery
 
-1. **Set up database backups**: Use tools like pg_dump to create regular backups of your PostgreSQL database.
+1. **Set up database backups**: Use tools like `mongodump` to create regular backups of your MongoDB database.
 
 2. **Set up file backups**: Use tools like rsync or cloud storage services to back up static and media files.
 

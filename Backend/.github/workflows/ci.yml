@@ -35,16 +35,12 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
+      mongodb:
+        image: mongo:latest
         ports:
-          - 5432:5432
+          - 27017:27017
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -67,7 +63,7 @@ jobs:
     - name: Run tests
       env:
         DJANGO_SETTINGS_MODULE: api.settings
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        DATABASE_URL: mongodb://localhost:27017/test_db
       run: |
         coverage run --source=Backend -m pytest
         coverage report
