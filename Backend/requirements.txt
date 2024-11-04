@@ -5,7 +5,7 @@ Flask-Migrate==3.1.0
 Flask-RESTful==0.3.9
 Flask-JWT-Extended==4.3.1
 gunicorn==22.0.0
-requests==2.27.1
+requests==2.32.2
 python-dotenv==0.20.0
 django-meta==2.0.0
 django-imagekit==4.0.2
