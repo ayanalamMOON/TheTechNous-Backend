@@ -14,6 +14,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
+from django.http import Http404
+from django.db import DatabaseError
 
 class StandardizedResponse:
     @staticmethod
@@ -199,3 +202,61 @@ class CustomPagination(PageNumberPagination):
                 'total_items': self.page.paginator.count
             }
         )
+
+def handle_404(request, exception):
+    return JsonResponse({'error': 'Resource not found'}, status=404)
+
+def handle_400(request, exception):
+    return JsonResponse({'error': 'Bad Request'}, status=400)
+
+def handle_401(request, exception):
+    return JsonResponse({'error': 'You are not authorized to access this resource'}, status=401)
+
+def handle_403(request, exception):
+    return JsonResponse({'error': 'You don\'t have the permission to access this resource'}, status=403)
+
+def handle_405(request, exception):
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def handle_database_error(request, exception):
+    return JsonResponse({'error': 'A database error occurred'}, status=500)
+
+def handle_validation_error(request, exception):
+    return JsonResponse({'error': 'A validation error occurred'}, status=400)
+
+def handle_authentication_error(request, exception):
+    return JsonResponse({'error': 'An authentication error occurred'}, status=401)
+
+def handle_unexpected_error(request, exception):
+    return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+
+def init_error_handlers():
+    from django.conf.urls import handler404, handler500, handler400, handler403, handler405
+    handler404 = handle_404
+    handler400 = handle_400
+    handler401 = handle_401
+    handler403 = handle_403
+    handler405 = handle_405
+    handler500 = handle_unexpected_error
+    from django.core.exceptions import ValidationError
+    from django.db import DatabaseError
+    from django.http import Http404
+    from rest_framework.exceptions import AuthenticationFailed
+    from rest_framework.views import exception_handler
+
+    def custom_exception_handler(exc, context):
+        response = exception_handler(exc, context)
+        if isinstance(exc, Http404):
+            return handle_404(context['request'], exc)
+        elif isinstance(exc, ValidationError):
+            return handle_validation_error(context['request'], exc)
+        elif isinstance(exc, DatabaseError):
+            return handle_database_error(context['request'], exc)
+        elif isinstance(exc, AuthenticationFailed):
+            return handle_authentication_error(context['request'], exc)
+        return response
+
+    from rest_framework.settings import api_settings
+    api_settings.EXCEPTION_HANDLER = custom_exception_handler
+
+init_error_handlers()

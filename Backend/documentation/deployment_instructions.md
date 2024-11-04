@@ -179,3 +179,87 @@ Before deploying the project, ensure you have the following prerequisites:
    - Update the notification views and routes in `Backend/app/routes/notifications.py` to interact with MongoDB.
 
 By following these deployment instructions, you can successfully deploy TheTechNous project to a production environment.
+
+## Deployment to Free Hosting Services
+
+### Deploying to Heroku
+
+1. **Create a Heroku account**: If you don't have one, create a Heroku account at [Heroku](https://www.heroku.com/).
+
+2. **Install the Heroku CLI**: Download and install the Heroku CLI from [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+
+3. **Login to Heroku**:
+   ```bash
+   heroku login
+   ```
+
+4. **Create a new Heroku app**:
+   ```bash
+   heroku create your-app-name
+   ```
+
+5. **Set up environment variables**:
+   ```bash
+   heroku config:set DJANGO_SECRET_KEY=your_secret_key
+   heroku config:set DJANGO_DEBUG=False
+   heroku config:set DJANGO_ALLOWED_HOSTS=your-app-name.herokuapp.com
+   heroku config:set DJANGO_DB_NAME=your_db_name
+   heroku config:set DJANGO_DB_USER=your_db_user
+   heroku config:set DJANGO_DB_PASSWORD=your_db_password
+   heroku config:set DJANGO_DB_HOST=your_db_host
+   heroku config:set DJANGO_DB_PORT=your_db_port
+   heroku config:set CELERY_BROKER_URL=redis://localhost:6379/0
+   heroku config:set CELERY_RESULT_BACKEND=redis://localhost:6379/0
+   ```
+
+6. **Deploy the app**:
+   ```bash
+   git push heroku main
+   ```
+
+7. **Run database migrations**:
+   ```bash
+   heroku run python Backend/api/manage.py migrate
+   ```
+
+8. **Collect static files**:
+   ```bash
+   heroku run python Backend/api/manage.py collectstatic --noinput
+   ```
+
+### Deploying to Vercel
+
+1. **Create a Vercel account**: If you don't have one, create a Vercel account at [Vercel](https://vercel.com/).
+
+2. **Install the Vercel CLI**: Download and install the Vercel CLI from [Vercel CLI](https://vercel.com/download).
+
+3. **Login to Vercel**:
+   ```bash
+   vercel login
+   ```
+
+4. **Initialize the project**:
+   ```bash
+   vercel init
+   ```
+
+5. **Set up environment variables**:
+   ```bash
+   vercel env add DJANGO_SECRET_KEY your_secret_key
+   vercel env add DJANGO_DEBUG False
+   vercel env add DJANGO_ALLOWED_HOSTS your-vercel-domain.vercel.app
+   vercel env add DJANGO_DB_NAME your_db_name
+   vercel env add DJANGO_DB_USER your_db_user
+   vercel env add DJANGO_DB_PASSWORD your_db_password
+   vercel env add DJANGO_DB_HOST your_db_host
+   vercel env add DJANGO_DB_PORT your_db_port
+   vercel env add CELERY_BROKER_URL redis://localhost:6379/0
+   vercel env add CELERY_RESULT_BACKEND redis://localhost:6379/0
+   ```
+
+6. **Deploy the app**:
+   ```bash
+   vercel --prod
+   ```
+
+By following these instructions, you can deploy TheTechNous project to free hosting services like Heroku and Vercel.

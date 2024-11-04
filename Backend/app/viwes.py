@@ -3,6 +3,7 @@ from routes.admin import admin
 from routes.blog import blog
 from routes.auth import auth
 from models import db
+from error_handler import init_error_handler
 
 app = Flask(__name__)
 
@@ -17,3 +18,5 @@ app.register_blueprint(auth, url_prefix='/auth')
 
 with app.app_context():
     db.create_all()
+
+init_error_handler(app)
