@@ -22,6 +22,9 @@ from Backend.app.viwes import app
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from django.urls import re_path
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -39,6 +42,19 @@ schema_view = get_schema_view(
 sitemaps = {
     'blog': BlogPostSitemap,
 }
+
+websocket_urlpatterns = [
+    re_path(r'ws/some_path/$', views.SomeConsumer.as_asgi()),
+]
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})
 
 urlpatterns = [
     path('admin/', admin.site.urls, app=app),
