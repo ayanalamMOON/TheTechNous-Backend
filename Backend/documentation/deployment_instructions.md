@@ -164,4 +164,18 @@ Before deploying the project, ensure you have the following prerequisites:
    channel_layer = get_channel_layer()
    ```
 
+## MongoDB Setup and Configuration for Specific Features
+
+1. **User Authentication**:
+   - Ensure the `User` model in `Backend/app/models.py` is configured to use MongoDB.
+   - Update the authentication views and routes in `Backend/app/routes/auth.py` to interact with MongoDB.
+
+2. **Blog Posts**:
+   - Ensure the `BlogPost` model in `Backend/app/models.py` is configured to use MongoDB.
+   - Update the blog post views and routes in `Backend/app/routes/blog.py` to interact with MongoDB.
+
+3. **Notifications**:
+   - Ensure the `Notification` model in `Backend/app/models.py` is configured to use MongoDB.
+   - Update the notification views and routes in `Backend/app/routes/notifications.py` to interact with MongoDB.
+
 By following these deployment instructions, you can successfully deploy TheTechNous project to a production environment.
