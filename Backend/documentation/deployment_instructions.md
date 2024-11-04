@@ -262,4 +262,40 @@ By following these deployment instructions, you can successfully deploy TheTechN
    vercel --prod
    ```
 
-By following these instructions, you can deploy TheTechNous project to free hosting services like Heroku and Vercel.
+### Deploying to Netlify
+
+1. **Create a Netlify account**: If you don't have one, create a Netlify account at [Netlify](https://www.netlify.com/).
+
+2. **Install the Netlify CLI**: Download and install the Netlify CLI from [Netlify CLI](https://docs.netlify.com/cli/get-started/).
+
+3. **Login to Netlify**:
+   ```bash
+   netlify login
+   ```
+
+4. **Initialize the project**:
+   ```bash
+   netlify init
+   ```
+
+5. **Set up environment variables**:
+   In the Netlify UI, go to your site's settings and add the following environment variables:
+   ```env
+   DJANGO_SECRET_KEY=your_secret_key
+   DJANGO_DEBUG=False
+   DJANGO_ALLOWED_HOSTS=your-netlify-domain.netlify.app
+   DJANGO_DB_NAME=your_db_name
+   DJANGO_DB_USER=your_db_user
+   DJANGO_DB_PASSWORD=your_db_password
+   DJANGO_DB_HOST=your_db_host
+   DJANGO_DB_PORT=your_db_port
+   CELERY_BROKER_URL=redis://localhost:6379/0
+   CELERY_RESULT_BACKEND=redis://localhost:6379/0
+   ```
+
+6. **Deploy the app**:
+   ```bash
+   netlify deploy --prod
+   ```
+
+By following these instructions, you can deploy TheTechNous project to free hosting services like Heroku, Vercel, and Netlify.
