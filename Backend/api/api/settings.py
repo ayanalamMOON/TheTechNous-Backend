@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Site framework support
     'channels',  # Django Channels
     'rest_framework',  # Django Rest Framework
-    'djongo',  # MongoDB support
 ]
 
 MIDDLEWARE = [
@@ -85,17 +84,27 @@ ASGI_APPLICATION = 'api.asgi.application'  # Django Channels
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
-        'CLIENT': {
-            'host': os.getenv('DJANGO_DB_HOST', 'localhost'),
-            'port': int(os.getenv('DJANGO_DB_PORT', '27017')),
-            'username': os.getenv('DJANGO_DB_USER', 'dev_user'),
-            'password': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
-        }
+        'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
+        'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
     }
 }
 
+# Free hosting service database settings
+if os.getenv('DJANGO_ENVIRONMENT') == 'free_hosting':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('FREE_HOSTING_DB_NAME'),
+            'USER': os.getenv('FREE_HOSTING_DB_USER'),
+            'PASSWORD': os.getenv('FREE_HOSTING_DB_PASSWORD'),
+            'HOST': os.getenv('FREE_HOSTING_DB_HOST'),
+            'PORT': os.getenv('FREE_HOSTING_DB_PORT'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -177,14 +186,12 @@ if ENVIRONMENT == 'production':
     ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
     DATABASES = {
         'default': {
-            'ENGINE': 'djongo',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DJANGO_DB_NAME'),
-            'CLIENT': {
-                'host': os.getenv('DJANGO_DB_HOST'),
-                'port': int(os.getenv('DJANGO_DB_PORT', '27017')),
-                'username': os.getenv('DJANGO_DB_USER'),
-                'password': os.getenv('DJANGO_DB_PASSWORD'),
-            }
+            'USER': os.getenv('DJANGO_DB_USER'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+            'HOST': os.getenv('DJANGO_DB_HOST'),
+            'PORT': os.getenv('DJANGO_DB_PORT'),
         }
     }
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -199,14 +206,12 @@ elif ENVIRONMENT == 'ci':
     ALLOWED_HOSTS = ['*']
     DATABASES = {
         'default': {
-            'ENGINE': 'djongo',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('CI_DB_NAME', 'ci_db'),
-            'CLIENT': {
-                'host': os.getenv('CI_DB_HOST', 'localhost'),
-                'port': int(os.getenv('CI_DB_PORT', '27017')),
-                'username': os.getenv('CI_DB_USER', 'ci_user'),
-                'password': os.getenv('CI_DB_PASSWORD', 'ci_password'),
-            }
+            'USER': os.getenv('CI_DB_USER', 'ci_user'),
+            'PASSWORD': os.getenv('CI_DB_PASSWORD', 'ci_password'),
+            'HOST': os.getenv('CI_DB_HOST', 'localhost'),
+            'PORT': os.getenv('CI_DB_PORT', '5432'),
         }
     }
 elif ENVIRONMENT == 'staging':
@@ -214,14 +219,12 @@ elif ENVIRONMENT == 'staging':
     ALLOWED_HOSTS = os.getenv('STAGING_ALLOWED_HOSTS', '').split(',')
     DATABASES = {
         'default': {
-            'ENGINE': 'djongo',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('STAGING_DB_NAME'),
-            'CLIENT': {
-                'host': os.getenv('STAGING_DB_HOST'),
-                'port': int(os.getenv('STAGING_DB_PORT', '27017')),
-                'username': os.getenv('STAGING_DB_USER'),
-                'password': os.getenv('STAGING_DB_PASSWORD'),
-            }
+            'USER': os.getenv('STAGING_DB_USER'),
+            'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
+            'HOST': os.getenv('STAGING_DB_HOST'),
+            'PORT': os.getenv('STAGING_DB_PORT'),
         }
     }
 else:
@@ -229,14 +232,12 @@ else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
     DATABASES = {
         'default': {
-            'ENGINE': 'djongo',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
-            'CLIENT': {
-                'host': os.getenv('DJANGO_DB_HOST', 'localhost'),
-                'port': int(os.getenv('DJANGO_DB_PORT', '27017')),
-                'username': os.getenv('DJANGO_DB_USER', 'dev_user'),
-                'password': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
-            }
+            'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
+            'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
+            'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
         }
     }
 

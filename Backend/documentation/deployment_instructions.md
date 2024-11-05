@@ -7,7 +7,7 @@ This document provides detailed deployment instructions for TheTechNous project,
 Before deploying the project, ensure you have the following prerequisites:
 
 1. **Python 3.8 or higher**: Install Python from the official website: [Python Downloads](https://www.python.org/downloads/)
-2. **MongoDB**: Install MongoDB from the official website: [MongoDB Downloads](https://www.mongodb.com/try/download/community)
+2. **PostgreSQL**: Install PostgreSQL from the official website: [PostgreSQL Downloads](https://www.postgresql.org/download/)
 3. **Redis**: Install Redis from the official website: [Redis Downloads](https://redis.io/download)
 4. **Celery**: Install Celery by adding it to your `requirements.txt` file.
 
@@ -45,17 +45,24 @@ Before deploying the project, ensure you have the following prerequisites:
    CELERY_RESULT_BACKEND=redis://localhost:6379/0
    ```
 
+5. **Set up environment variables for free hosting service**:
+   Add the following environment variables to the `.env` file for the free hosting service:
+   ```env
+   FREE_HOSTING_API_KEY=your_free_hosting_api_key
+   FREE_HOSTING_DB_NAME=your_free_hosting_db_name
+   FREE_HOSTING_DB_USER=your_free_hosting_db_user
+   FREE_HOSTING_DB_PASSWORD=your_free_hosting_db_password
+   FREE_HOSTING_DB_HOST=your_free_hosting_db_host
+   FREE_HOSTING_DB_PORT=your_free_hosting_db_port
+   ```
+
 ## Database Setup
 
-1. **Create the MongoDB database**:
-   ```bash
-   mongo
-   use your_db_name
-   db.createUser({
-     user: "your_db_user",
-     pwd: "your_db_password",
-     roles: [{ role: "readWrite", db: "your_db_name" }]
-   })
+1. **Create the PostgreSQL database**:
+   ```sql
+   CREATE DATABASE your_db_name;
+   CREATE USER your_db_user WITH PASSWORD 'your_db_password';
+   GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_db_user;
    ```
 
 2. **Apply database migrations**:
@@ -105,6 +112,33 @@ Before deploying the project, ensure you have the following prerequisites:
 
 6. **Enable HTTPS**: Use Let's Encrypt to obtain an SSL certificate and configure your web server to use HTTPS.
 
+## Deployment to Free Hosting Service
+
+1. **Choose a free hosting service**: Select a free hosting service like Heroku, Vercel, or Render.
+
+2. **Set up the free hosting service**: Follow the instructions provided by the chosen hosting service to set up your project.
+
+3. **Deploy the application**: Use the deployment steps provided by the hosting service to deploy your application. For example, if using Heroku:
+   ```bash
+   heroku create your-app-name
+   git push heroku main
+   heroku run python Backend/api/manage.py migrate
+   heroku run python Backend/api/manage.py collectstatic --noinput
+   ```
+
+4. **Configure environment variables**: Set the environment variables for the free hosting service using the hosting service's dashboard or CLI. For example, if using Heroku:
+   ```bash
+   heroku config:set DJANGO_SECRET_KEY=your_secret_key
+   heroku config:set DJANGO_DEBUG=False
+   heroku config:set DJANGO_ALLOWED_HOSTS=your_domain.com
+   heroku config:set FREE_HOSTING_API_KEY=your_free_hosting_api_key
+   heroku config:set FREE_HOSTING_DB_NAME=your_free_hosting_db_name
+   heroku config:set FREE_HOSTING_DB_USER=your_free_hosting_db_user
+   heroku config:set FREE_HOSTING_DB_PASSWORD=your_free_hosting_db_password
+   heroku config:set FREE_HOSTING_DB_HOST=your_free_hosting_db_host
+   heroku config:set FREE_HOSTING_DB_PORT=your_free_hosting_db_port
+   ```
+
 ## Monitoring and Logging
 
 1. **Set up monitoring**: Use monitoring tools like Prometheus, Grafana, or New Relic to monitor your application.
@@ -113,7 +147,7 @@ Before deploying the project, ensure you have the following prerequisites:
 
 ## Backup and Recovery
 
-1. **Set up database backups**: Use tools like `mongodump` to create regular backups of your MongoDB database.
+1. **Set up database backups**: Use tools like pg_dump to create regular backups of your PostgreSQL database.
 
 2. **Set up file backups**: Use tools like rsync or cloud storage services to back up static and media files.
 
@@ -164,138 +198,4 @@ Before deploying the project, ensure you have the following prerequisites:
    channel_layer = get_channel_layer()
    ```
 
-## MongoDB Setup and Configuration for Specific Features
-
-1. **User Authentication**:
-   - Ensure the `User` model in `Backend/app/models.py` is configured to use MongoDB.
-   - Update the authentication views and routes in `Backend/app/routes/auth.py` to interact with MongoDB.
-
-2. **Blog Posts**:
-   - Ensure the `BlogPost` model in `Backend/app/models.py` is configured to use MongoDB.
-   - Update the blog post views and routes in `Backend/app/routes/blog.py` to interact with MongoDB.
-
-3. **Notifications**:
-   - Ensure the `Notification` model in `Backend/app/models.py` is configured to use MongoDB.
-   - Update the notification views and routes in `Backend/app/routes/notifications.py` to interact with MongoDB.
-
 By following these deployment instructions, you can successfully deploy TheTechNous project to a production environment.
-
-## Deployment to Free Hosting Services
-
-### Deploying to Heroku
-
-1. **Create a Heroku account**: If you don't have one, create a Heroku account at [Heroku](https://www.heroku.com/).
-
-2. **Install the Heroku CLI**: Download and install the Heroku CLI from [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
-
-3. **Login to Heroku**:
-   ```bash
-   heroku login
-   ```
-
-4. **Create a new Heroku app**:
-   ```bash
-   heroku create your-app-name
-   ```
-
-5. **Set up environment variables**:
-   ```bash
-   heroku config:set DJANGO_SECRET_KEY=your_secret_key
-   heroku config:set DJANGO_DEBUG=False
-   heroku config:set DJANGO_ALLOWED_HOSTS=your-app-name.herokuapp.com
-   heroku config:set DJANGO_DB_NAME=your_db_name
-   heroku config:set DJANGO_DB_USER=your_db_user
-   heroku config:set DJANGO_DB_PASSWORD=your_db_password
-   heroku config:set DJANGO_DB_HOST=your_db_host
-   heroku config:set DJANGO_DB_PORT=your_db_port
-   heroku config:set CELERY_BROKER_URL=redis://localhost:6379/0
-   heroku config:set CELERY_RESULT_BACKEND=redis://localhost:6379/0
-   ```
-
-6. **Deploy the app**:
-   ```bash
-   git push heroku main
-   ```
-
-7. **Run database migrations**:
-   ```bash
-   heroku run python Backend/api/manage.py migrate
-   ```
-
-8. **Collect static files**:
-   ```bash
-   heroku run python Backend/api/manage.py collectstatic --noinput
-   ```
-
-### Deploying to Vercel
-
-1. **Create a Vercel account**: If you don't have one, create a Vercel account at [Vercel](https://vercel.com/).
-
-2. **Install the Vercel CLI**: Download and install the Vercel CLI from [Vercel CLI](https://vercel.com/download).
-
-3. **Login to Vercel**:
-   ```bash
-   vercel login
-   ```
-
-4. **Initialize the project**:
-   ```bash
-   vercel init
-   ```
-
-5. **Set up environment variables**:
-   ```bash
-   vercel env add DJANGO_SECRET_KEY your_secret_key
-   vercel env add DJANGO_DEBUG False
-   vercel env add DJANGO_ALLOWED_HOSTS your-vercel-domain.vercel.app
-   vercel env add DJANGO_DB_NAME your_db_name
-   vercel env add DJANGO_DB_USER your_db_user
-   vercel env add DJANGO_DB_PASSWORD your_db_password
-   vercel env add DJANGO_DB_HOST your_db_host
-   vercel env add DJANGO_DB_PORT your_db_port
-   vercel env add CELERY_BROKER_URL redis://localhost:6379/0
-   vercel env add CELERY_RESULT_BACKEND redis://localhost:6379/0
-   ```
-
-6. **Deploy the app**:
-   ```bash
-   vercel --prod
-   ```
-
-### Deploying to Netlify
-
-1. **Create a Netlify account**: If you don't have one, create a Netlify account at [Netlify](https://www.netlify.com/).
-
-2. **Install the Netlify CLI**: Download and install the Netlify CLI from [Netlify CLI](https://docs.netlify.com/cli/get-started/).
-
-3. **Login to Netlify**:
-   ```bash
-   netlify login
-   ```
-
-4. **Initialize the project**:
-   ```bash
-   netlify init
-   ```
-
-5. **Set up environment variables**:
-   In the Netlify UI, go to your site's settings and add the following environment variables:
-   ```env
-   DJANGO_SECRET_KEY=your_secret_key
-   DJANGO_DEBUG=False
-   DJANGO_ALLOWED_HOSTS=your-netlify-domain.netlify.app
-   DJANGO_DB_NAME=your_db_name
-   DJANGO_DB_USER=your_db_user
-   DJANGO_DB_PASSWORD=your_db_password
-   DJANGO_DB_HOST=your_db_host
-   DJANGO_DB_PORT=your_db_port
-   CELERY_BROKER_URL=redis://localhost:6379/0
-   CELERY_RESULT_BACKEND=redis://localhost:6379/0
-   ```
-
-6. **Deploy the app**:
-   ```bash
-   netlify deploy --prod
-   ```
-
-By following these instructions, you can deploy TheTechNous project to free hosting services like Heroku, Vercel, and Netlify.
