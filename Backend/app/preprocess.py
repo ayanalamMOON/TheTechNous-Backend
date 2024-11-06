@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from app.models import UserActivityLog
+from api.models import UserActivityLog
 
 def clean_activity_data(activity_data):
     """

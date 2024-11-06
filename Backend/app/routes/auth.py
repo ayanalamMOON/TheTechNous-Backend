@@ -58,3 +58,27 @@ def profile():
     user = User.query.get(current_user)
     log_user_activity(current_user, 'Viewed profile')
     return jsonify({'username': user.username, 'email': user.email, 'is_admin': user.is_admin}), 200
+
+@auth.route('/enable_2fa', methods=['POST'])
+@jwt_required()
+def enable_2fa():
+    current_user = get_jwt_identity()
+    user = User.query.get(current_user)
+    if not user.mfa_secret:
+        user.mfa_secret = pyotp.random_base32()
+        db.session.commit()
+        log_user_activity(current_user, 'Enabled 2FA')
+        return jsonify({'message': '2FA enabled successfully', 'mfa_secret': user.mfa_secret}), 200
+    return jsonify({'message': '2FA is already enabled'}), 400
+
+@auth.route('/disable_2fa', methods=['POST'])
+@jwt_required()
+def disable_2fa():
+    current_user = get_jwt_identity()
+    user = User.query.get(current_user)
+    if user.mfa_secret:
+        user.mfa_secret = None
+        db.session.commit()
+        log_user_activity(current_user, 'Disabled 2FA')
+        return jsonify({'message': '2FA disabled successfully'}), 200
+    return jsonify({'message': '2FA is not enabled'}), 400

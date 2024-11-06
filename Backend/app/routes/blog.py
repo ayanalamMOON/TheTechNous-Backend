@@ -9,6 +9,7 @@ from app import app
 
 blog = Blueprint('blog', __name__, app=app)
 cache = Cache(config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': 'redis://localhost:6379/1'})
+cache.init_app(app)
 
 def can_post(user_id):
     user = User.query.get(user_id)
