@@ -90,6 +90,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
         'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
         'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
+        'OPTIONS': {
+            'MAX_CONNS': 20,  # Maximum number of connections in the pool
+            'MIN_CONNS': 5,   # Minimum number of connections in the pool
+        }
     }
 }
 
@@ -103,6 +107,10 @@ if os.getenv('DJANGO_ENVIRONMENT') == 'free_hosting':
             'PASSWORD': os.getenv('FREE_HOSTING_DB_PASSWORD'),
             'HOST': os.getenv('FREE_HOSTING_DB_HOST'),
             'PORT': os.getenv('FREE_HOSTING_DB_PORT'),
+            'OPTIONS': {
+                'MAX_CONNS': 20,  # Maximum number of connections in the pool
+                'MIN_CONNS': 5,   # Minimum number of connections in the pool
+            }
         }
     }
 
@@ -192,6 +200,10 @@ if ENVIRONMENT == 'production':
             'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
             'HOST': os.getenv('DJANGO_DB_HOST'),
             'PORT': os.getenv('DJANGO_DB_PORT'),
+            'OPTIONS': {
+                'MAX_CONNS': 20,  # Maximum number of connections in the pool
+                'MIN_CONNS': 5,   # Minimum number of connections in the pool
+            }
         }
     }
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -212,6 +224,10 @@ elif ENVIRONMENT == 'ci':
             'PASSWORD': os.getenv('CI_DB_PASSWORD', 'ci_password'),
             'HOST': os.getenv('CI_DB_HOST', 'localhost'),
             'PORT': os.getenv('CI_DB_PORT', '5432'),
+            'OPTIONS': {
+                'MAX_CONNS': 20,  # Maximum number of connections in the pool
+                'MIN_CONNS': 5,   # Minimum number of connections in the pool
+            }
         }
     }
 elif ENVIRONMENT == 'staging':
@@ -225,6 +241,10 @@ elif ENVIRONMENT == 'staging':
             'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
             'HOST': os.getenv('STAGING_DB_HOST'),
             'PORT': os.getenv('STAGING_DB_PORT'),
+            'OPTIONS': {
+                'MAX_CONNS': 20,  # Maximum number of connections in the pool
+                'MIN_CONNS': 5,   # Minimum number of connections in the pool
+            }
         }
     }
 else:
@@ -238,6 +258,10 @@ else:
             'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
             'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
             'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
+            'OPTIONS': {
+                'MAX_CONNS': 20,  # Maximum number of connections in the pool
+                'MIN_CONNS': 5,   # Minimum number of connections in the pool
+            }
         }
     }
 
