@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 import logging.config
+import dj_database_url  # Pe0ad
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -315,7 +316,8 @@ REQUIRED_ENV_VARS = [
     'DJANGO_LOGLEVEL',
     'DJANGO_ENVIRONMENT',
     'CELERY_BROKER_URL',
-    'CELERY_RESULT_BACKEND'
+    'CELERY_RESULT_BACKEND',
+    'DATABASE_URL'  # P6648
 ]
 
 for var in REQUIRED_ENV_VARS:
@@ -337,3 +339,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Update DATABASES configuration to use dj_database_url to parse DATABASE_URL (P46e2)
+DATABASES['default'] = dj_database_url.config(default=os.getenv('DATABASE_URL'))

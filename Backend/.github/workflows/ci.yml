@@ -93,6 +93,7 @@ jobs:
     - name: Deploy to staging
       env:
         DJANGO_SETTINGS_MODULE: api.settings
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
         python Backend/api/manage.py migrate
         python Backend/api/manage.py collectstatic --noinput
@@ -101,6 +102,7 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: api.settings
         FREE_HOSTING_API_KEY: ${{ secrets.FREE_HOSTING_API_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
         # Add deployment steps for the chosen free hosting service here
         echo "Deploying to free hosting service..."
