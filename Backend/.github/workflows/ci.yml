@@ -106,3 +106,7 @@ jobs:
       run: |
         # Add deployment steps for the chosen free hosting service here
         echo "Deploying to free hosting service..."
+        heroku create ${{ secrets.HEROKU_APP_NAME }}
+        git push heroku main
+        heroku run python Backend/api/manage.py migrate
+        heroku run python Backend/api/manage.py collectstatic --noinput

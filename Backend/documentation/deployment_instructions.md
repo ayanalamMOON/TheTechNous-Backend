@@ -43,6 +43,7 @@ Before deploying the project, ensure you have the following prerequisites:
    DJANGO_DB_PORT=your_db_port
    CELERY_BROKER_URL=redis://localhost:6379/0
    CELERY_RESULT_BACKEND=redis://localhost:6379/0
+   DATABASE_URL=your_database_url
    ```
 
 5. **Set up environment variables for free hosting service**:
@@ -137,6 +138,7 @@ Before deploying the project, ensure you have the following prerequisites:
    heroku config:set FREE_HOSTING_DB_PASSWORD=your_free_hosting_db_password
    heroku config:set FREE_HOSTING_DB_HOST=your_free_hosting_db_host
    heroku config:set FREE_HOSTING_DB_PORT=your_free_hosting_db_port
+   heroku config:set DATABASE_URL=your_database_url
    ```
 
 ## Monitoring and Logging
