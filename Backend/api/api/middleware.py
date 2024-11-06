@@ -8,3 +8,15 @@ class CustomCorsMiddleware(MiddlewareMixin, CorsMiddleware):
         response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         return response
+
+class CustomCookieMiddleware(MiddlewareMixin):
+    def process_response(self, request, response):
+        response.set_cookie(
+            'custom_cookie',
+            'cookie_value',
+            max_age=3600,
+            secure=True,
+            httponly=True,
+            samesite='Strict'
+        )
+        return response
