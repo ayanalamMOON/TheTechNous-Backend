@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, validate
-from Backend.app.viwes import app
+from Backend.api.api import app
 
 class UserSchema(Schema):
     def __init__(self, *args, **kwargs):

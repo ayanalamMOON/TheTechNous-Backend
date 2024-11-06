@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from Backend.app.viwes import app
+from api import app
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 

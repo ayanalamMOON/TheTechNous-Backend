@@ -18,13 +18,13 @@ from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.sitemaps import Sitemap
 from app.sitemaps import BlogPostSitemap
 from Backend.app.viwes import app
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from api.api import views as api_views
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from django.urls import re_path
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -43,19 +43,6 @@ sitemaps = {
     'blog': BlogPostSitemap,
 }
 
-websocket_urlpatterns = [
-    re_path(r'ws/some_path/$', views.SomeConsumer.as_asgi()),
-]
-
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
-        )
-    ),
-})
-
 urlpatterns = [
     path('admin/', admin.site.urls, app=app),
     path('', views.index, name='index', app=app),  # Example view from views.py
@@ -69,3 +56,16 @@ urlpatterns = [
     path('media/', include('app.media.urls')),  # File uploads and media management
     path('search/', include('app.search.urls')),  # Advanced search functionality
 ]
+
+websocket_urlpatterns = [
+    path("ws/some_path/", api_views.SomeConsumer.as_asgi()),
+]
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})

@@ -14,6 +14,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
 from channels.layers import get_channel_layer
+from django.urls import path
+from api.api import views
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 django.setup()
@@ -22,7 +24,9 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            # Add your websocket URL routes here
+            [
+                path("ws/some_path/", views.SomeConsumer.as_asgi()),
+            ]
         )
     ),
 })

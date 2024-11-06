@@ -1,5 +1,5 @@
 from django.contrib.sitemaps import Sitemap
-from .models import BlogPost
+from Backend.api.api.models import BlogPost
 
 class BlogPostSitemap(Sitemap):
     changefreq = "daily"
