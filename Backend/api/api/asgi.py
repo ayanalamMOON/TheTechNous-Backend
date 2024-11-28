@@ -11,9 +11,11 @@ import os
 import django
 from django.core.asgi import get_asgi_application
 from django.urls import path
+
 from channels.routing import get_default_application, ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.layers import get_channel_layer
+
 from api.api import views
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')

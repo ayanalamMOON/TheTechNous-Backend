@@ -13,13 +13,12 @@ Class-based views
 """
 from django.contrib import admin
 from django.urls import path, include
-from app import views
+from api.api import views as api_views
 from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.sitemaps import Sitemap
 from app.sitemaps import BlogPostSitemap
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from api.api import views as api_views
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -44,9 +43,9 @@ sitemaps = {
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),  # Example view from views.py
+    path('', api_views.index, name='index'),  # Example view from views.py
     path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('post/<slug:slug>/', views.post_detail, name='post_detail'),
+    path('post/<slug:slug>/', api_views.post_detail, name='post_detail'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('roles/', include('app.roles.urls')),  # User roles and permissions management
