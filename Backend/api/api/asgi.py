@@ -21,15 +21,17 @@ from api.api import views
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 django.setup()
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            [
-                path("ws/some_path/", views.SomeConsumer.as_asgi()),
-            ]
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(
+                [
+                    path("ws/some_path/", views.SomeConsumer.as_asgi()),
+                ]
+            )
+        ),
+    }
+)
 
 channel_layer = get_channel_layer()

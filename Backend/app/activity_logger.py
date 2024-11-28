@@ -3,6 +3,7 @@ from app.viwes import db
 from app.models import UserActivityLog
 from app import preprocess  # Import the preprocess module
 
+
 def log_user_activity(user_id, activity):
     """
     Log user activity.
@@ -19,6 +20,7 @@ def log_user_activity(user_id, activity):
     preprocessed_data = preprocess.preprocess_activity_data()
     app.logger.info(f"Preprocessed activity data: {preprocessed_data}")
 
+
 """
 Activity Logger
 
@@ -34,3 +36,4 @@ from app.activity_logger import log_user_activity
 
 log_user_activity(user_id=1, activity="User logged in")
 ```
+"""
