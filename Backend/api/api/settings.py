@@ -219,6 +219,8 @@ if ENVIRONMENT == 'production':
     CSRF_COOKIE_HTTPONLY = True
     SESSION_COOKIE_AGE = 1209600  # 2 weeks
     SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+    SECURE_BROWSER_XSS_FILTER = True  # P1037
+    SECURE_REFERRER_POLICY = 'same-origin'  # P75fa
 elif ENVIRONMENT == 'ci':
     DEBUG = False
     ALLOWED_HOSTS = ['*']

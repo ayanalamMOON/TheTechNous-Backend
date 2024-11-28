@@ -4,8 +4,13 @@ from app.models import db, User
 import pyotp
 from app.activity_logger import log_user_activity
 from app import app
+from datetime import datetime, timedelta
 
 auth = Blueprint('auth', __name__, app=app)
+
+# Account lockout settings
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_TIME = timedelta(minutes=15)
 
 @auth.route('/')
 def auth_home():
@@ -39,15 +44,27 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
 
-    if user and user.check_password(data.get('password')):
-        otp = data.get('otp')
-        totp = pyotp.TOTP(user.mfa_secret)
-        if totp.verify(otp):
-            access_token = create_access_token(identity=user.id)
-            log_user_activity(user.id, 'User logged in')
-            return jsonify({'access_token': access_token}), 200
+    if user:
+        if user.failed_attempts >= MAX_FAILED_ATTEMPTS and datetime.utcnow() < user.lockout_until:
+            return jsonify({'message': 'Account locked. Try again later.'}), 403
+
+        if user.check_password(data.get('password')):
+            otp = data.get('otp')
+            totp = pyotp.TOTP(user.mfa_secret)
+            if totp.verify(otp):
+                access_token = create_access_token(identity=user.id)
+                log_user_activity(user.id, 'User logged in')
+                user.failed_attempts = 0
+                db.session.commit()
+                return jsonify({'access_token': access_token}), 200
+            else:
+                user.failed_attempts += 1
+                db.session.commit()
+                return jsonify({'message': 'Invalid OTP'}), 401
         else:
-            return jsonify({'message': 'Invalid OTP'}), 401
+            user.failed_attempts += 1
+            db.session.commit()
+            return jsonify({'message': 'Invalid login credentials'}), 401
 
     return jsonify({'message': 'Invalid login credentials'}), 401
 
