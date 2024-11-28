@@ -1,6 +1,7 @@
 from django.utils.deprecation import MiddlewareMixin
 from corsheaders.middleware import CorsMiddleware
 
+
 class CustomCorsMiddleware(MiddlewareMixin, CorsMiddleware):
     def process_response(self, request, response):
         response = super().process_response(request, response)
@@ -9,6 +10,7 @@ class CustomCorsMiddleware(MiddlewareMixin, CorsMiddleware):
         response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response["Access-Control-Allow-Credentials"] = "true"
         return response
+
 
 class CustomCookieMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
@@ -21,6 +23,7 @@ class CustomCookieMiddleware(MiddlewareMixin):
             samesite='Strict'
         )
         return response
+
 
 class CustomSecurityMiddleware(MiddlewareMixin):
     def process_response(self, request, response):

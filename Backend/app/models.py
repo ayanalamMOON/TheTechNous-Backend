@@ -1,15 +1,18 @@
+import os
+import re
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from argon2 import PasswordHasher
-import re
 from cryptography.fernet import Fernet
-import os
+
+db = SQLAlchemy()
 
 ph = PasswordHasher()
 
 # Generate a key for encryption
 key = os.getenv('ENCRYPTION_KEY', Fernet.generate_key())
 cipher_suite = Fernet(key)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,7 +56,8 @@ class User(db.Model):
 
     def is_common_password(self, password):
         common_passwords = [
-            "123456", "password", "123456789", "12345678", "12345", "1234567", "1234567890", "qwerty", "abc123", "password1"
+            "123456", "password", "123456789", "12345678", "12345", "1234567", "1234567890", "qwerty", "abc123",
+            "password1"
         ]
         return password in common_passwords
 
@@ -80,20 +84,23 @@ class User(db.Model):
     def get_email(self):
         return self.decrypt_data(self.email)
 
+
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+
 
 class UserRoles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete='CASCADE'))
 
+
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable= False, index=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
@@ -101,6 +108,7 @@ class BlogPost(db.Model):
 
     def get_absolute_url(self):
         return f"/blog/post/{self.id}"
+
 
 class UserActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -110,6 +118,7 @@ class UserActivityLog(db.Model):
 
     user = db.relationship('User', backref=db.backref('activity_logs', lazy=True))
 
+
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
@@ -117,6 +126,7 @@ class Notification(db.Model):
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
     user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+
 
 class SocialMediaShare(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -126,11 +136,13 @@ class SocialMediaShare(db.Model):
 
     post = db.relationship('BlogPost', backref=db.backref('social_shares', lazy=True))
 
+
 class MediaFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(255), nullable=False)
     file_url = db.Column(db.String(255), nullable=False)
     uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
+
 
 class SearchQuery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -140,7 +152,8 @@ class SearchQuery(db.Model):
 
     user = db.relationship('User', backref=db.backref('search_queries', lazy=True))
 
+
 class PasswordHistory(db.Model):
-    id = db.Column(db.Integer, primary key=True)
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 import logging.config
-import dj_database_url  # Pe0ad
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-msit7$4d*^4y%@*t-8c71(*d1oilxan*4cm8-u4vu7j2sz#!3k')
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY', 'django-insecure-msit7$4d*^4y%@*t-8c71(*d1oilxan*4cm8-u4vu7j2sz#!3k'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
@@ -56,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # P0e3d
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -218,8 +220,8 @@ if ENVIRONMENT == 'production':
     CSRF_COOKIE_HTTPONLY = True
     SESSION_COOKIE_AGE = 1209600  # 2 weeks
     SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-    SECURE_BROWSER_XSS_FILTER = True  # P1037
-    SECURE_REFERRER_POLICY = 'same-origin'  # P75fa
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_REFERRER_POLICY = 'same-origin'
 elif ENVIRONMENT == 'ci':
     DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -278,7 +280,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Security headers
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
-CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'"
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; "
+    "font-src 'self'; connect-src 'self'"
+)
 
 # Celery settings
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
@@ -323,7 +328,7 @@ REQUIRED_ENV_VARS = [
     'DJANGO_ENVIRONMENT',
     'CELERY_BROKER_URL',
     'CELERY_RESULT_BACKEND',
-    'DATABASE_URL'  # P6648
+    'DATABASE_URL'
 ]
 
 for var in REQUIRED_ENV_VARS:
@@ -352,5 +357,5 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Update DATABASES configuration to use dj_database_url to parse DATABASE_URL (P46e2)
+# Update DATABASES configuration to use dj_database_url to parse DATABASE_URL
 DATABASES['default'] = dj_database_url.config(default=os.getenv('DATABASE_URL'))

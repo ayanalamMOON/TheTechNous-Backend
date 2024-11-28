@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app.models import db, User
 import pyotp
-from app.activity_logger import log_user_activity
 from datetime import datetime, timedelta
+
+from app.models import db, User
+from app.activity_logger import log_user_activity
 
 auth = Blueprint('auth', __name__)
 
@@ -11,12 +12,24 @@ auth = Blueprint('auth', __name__)
 MAX_FAILED_ATTEMPTS = 5
 LOCKOUT_TIME = timedelta(minutes=15)
 
+
 @auth.route('/')
 def auth_home():
-    return jsonify({'msg': 'Auth Home'}), 200    
+    """
+    Auth Home endpoint.
+
+    :return: JSON response with a message.
+    """
+    return jsonify({'msg': 'Auth Home'}), 200
+
 
 @auth.route('/register', methods=['POST'])
 def register():
+    """
+    Register a new user.
+
+    :return: JSON response with a message and MFA secret.
+    """
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
@@ -24,7 +37,7 @@ def register():
 
     if User.query.filter_by(username=username).first():
         return jsonify({'message': 'Username already exists'}), 400
-    
+
     if User.query.filter_by(email=email).first():
         return jsonify({'message': 'Email already exists'}), 400
 
@@ -38,8 +51,14 @@ def register():
 
     return jsonify({'message': 'User created successfully', 'mfa_secret': new_user.mfa_secret}), 201
 
+
 @auth.route('/login', methods=['POST'])
 def login():
+    """
+    User login endpoint.
+
+    :return: JSON response with an access token or error message.
+    """
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
 
@@ -67,17 +86,29 @@ def login():
 
     return jsonify({'message': 'Invalid login credentials'}), 401
 
+
 @auth.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
+    """
+    Get user profile information.
+
+    :return: JSON response with user profile information.
+    """
     current_user = get_jwt_identity()
     user = User.query.get(current_user)
     log_user_activity(current_user, 'Viewed profile')
     return jsonify({'username': user.username, 'email': user.email, 'is_admin': user.is_admin}), 200
 
+
 @auth.route('/enable_2fa', methods=['POST'])
 @jwt_required()
 def enable_2fa():
+    """
+    Enable 2FA for the user.
+
+    :return: JSON response with a message and MFA secret.
+    """
     current_user = get_jwt_identity()
     user = User.query.get(current_user)
     if not user.mfa_secret:
@@ -87,9 +118,15 @@ def enable_2fa():
         return jsonify({'message': '2FA enabled successfully', 'mfa_secret': user.mfa_secret}), 200
     return jsonify({'message': '2FA is already enabled'}), 400
 
+
 @auth.route('/disable_2fa', methods=['POST'])
 @jwt_required()
 def disable_2fa():
+    """
+    Disable 2FA for the user.
+
+    :return: JSON response with a message.
+    """
     current_user = get_jwt_identity()
     user = User.query.get(current_user)
     if user.mfa_secret:

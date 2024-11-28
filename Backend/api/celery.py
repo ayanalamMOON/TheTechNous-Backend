@@ -1,13 +1,16 @@
+from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
-from api.api import app
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
-def make_celery(app):
-    celery = Celery('api', app=app)
-    celery.config_from_object('django.conf:settings', namespace='CELERY')
-    celery.autodiscover_tasks()
-    return celery
+app = Celery('api')
 
-celery_app = make_celery(app)
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+@app.task(bind=True)
+def debug_task(self):
+    print('Request: {0!r}'.format(self.request))

@@ -1,5 +1,5 @@
 from datetime import datetime
-from Backend.app.viwes import db
+from app.viwes import db
 from app.models import UserActivityLog
 from app import preprocess  # Import the preprocess module
 

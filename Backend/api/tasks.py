@@ -1,4 +1,4 @@
-from .celery import app
+from api.celery import app
 from api import app as flask_app
 
 @app.task

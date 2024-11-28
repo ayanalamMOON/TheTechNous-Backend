@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from api.models import UserActivityLog
 
+
 def clean_activity_data(activity_data):
     """
     Clean the activity data by removing duplicates and handling missing values.
@@ -12,6 +13,7 @@ def clean_activity_data(activity_data):
     activity_data.drop_duplicates(inplace=True)
     activity_data.fillna(method='ffill', inplace=True)
     return activity_data
+
 
 def transform_activity_data(activity_data):
     """
@@ -25,6 +27,7 @@ def transform_activity_data(activity_data):
     activity_data['day_of_week'] = activity_data['timestamp'].dt.dayofweek
     return activity_data
 
+
 def aggregate_activity_data(activity_data):
     """
     Aggregate the activity data by user and activity type.
@@ -37,6 +40,7 @@ def aggregate_activity_data(activity_data):
     }).reset_index()
     aggregated_data.columns = ['user_id', 'activity', 'first_activity', 'last_activity', 'activity_count']
     return aggregated_data
+
 
 def preprocess_activity_data():
     """

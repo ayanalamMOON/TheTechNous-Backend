@@ -1,4 +1,5 @@
 from flask import Flask
+
 from app.routes.admin import admin
 from app.routes.blog import blog
 from app.routes.auth import auth

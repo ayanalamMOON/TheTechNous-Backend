@@ -17,6 +17,7 @@ from rest_framework import serializers
 from channels.generic.websocket import WebsocketConsumer
 import json
 
+
 class StandardizedResponse:
     @staticmethod
     def success(data, metadata=None):
@@ -36,6 +37,7 @@ class StandardizedResponse:
         }
         return Response(response, status=status_code)
 
+
 class CustomPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
@@ -52,6 +54,7 @@ class CustomPagination(PageNumberPagination):
             }
         )
 
+
 class ExampleView(APIView):
     def get(self, request):
         data = {
@@ -62,19 +65,21 @@ class ExampleView(APIView):
     def post(self, request):
         if not request.data.get("example_field"):
             return StandardizedResponse.error("example_field is required", status.HTTP_400_BAD_REQUEST)
-        
+
         data = {
             "message": "Data received successfully",
             "received_data": request.data
         }
         return StandardizedResponse.success(data)
 
+
 class UserRoleView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         users = User.objects.all()
-        data = [{"id": user.id, "username": user.username, "roles": [group.name for group in user.groups.all()]} for user in users]
+        data = [{"id": user.id, "username": user.username, "roles": [group.name for group in user.groups.all()]}
+                for user in users]
         return StandardizedResponse.success(data)
 
     def post(self, request):
@@ -85,12 +90,14 @@ class UserRoleView(APIView):
         user.groups.add(role)
         return StandardizedResponse.success({"message": "Role added successfully"})
 
+
 class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         notifications = request.user.notifications.all()
-        data = [{"id": notification.id, "message": notification.message, "timestamp": notification.timestamp} for notification in notifications]
+        data = [{"id": notification.id, "message": notification.message, "timestamp": notification.timestamp}
+                for notification in notifications]
         return StandardizedResponse.success(data)
 
     def post(self, request):
@@ -104,6 +111,7 @@ class NotificationView(APIView):
         )
         return StandardizedResponse.success({"message": "Notification sent successfully"})
 
+
 class SocialMediaShareView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -113,6 +121,7 @@ class SocialMediaShareView(APIView):
         # Here you would integrate with social media APIs to share the post
         return StandardizedResponse.success({"message": "Post shared successfully", "post_url": post_url})
 
+
 class FileUploadView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
@@ -121,22 +130,25 @@ class FileUploadView(APIView):
         file = request.data.get('file')
         if not file:
             return StandardizedResponse.error("No file provided", status.HTTP_400_BAD_REQUEST)
-        
+
         file_name = default_storage.save(file.name, ContentFile(file.read()))
         file_url = default_storage.url(file_name)
         return StandardizedResponse.success({"message": "File uploaded successfully", "file_url": file_url})
 
+
 class AdvancedSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
-        results = User.objects.filter(Q(username__icontains(query) | Q(email__icontains(query)))
+        results = User.objects.filter(Q(username__icontains=query) | Q(email__icontains(query)))
         data = [{"id": user.id, "username": user.username, "email": user.email} for user in results]
         return StandardizedResponse.success(data)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -177,14 +189,17 @@ class UserViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return StandardizedResponse.success({"message": "User deleted successfully"})
 
+
 class CustomPermission(IsAuthenticated):
     def has_permission(self, request, view):
         return super().has_permission(request, view) and request.user.is_active
+
 
 class CustomThrottle:
     def allow_request(self, request, view):
         # Implement custom throttling logic here
         return True
+
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
@@ -201,6 +216,7 @@ class CustomPagination(PageNumberPagination):
                 'total_items': self.page.paginator.count
             }
         )
+
 
 class WebSocketConsumer(WebsocketConsumer):
     def connect(self):
