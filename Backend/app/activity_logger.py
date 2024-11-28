@@ -2,6 +2,11 @@ from datetime import datetime
 from app.viwes import db
 from app.models import UserActivityLog
 from app import preprocess  # Import the preprocess module
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def log_user_activity(user_id, activity):
@@ -14,11 +19,11 @@ def log_user_activity(user_id, activity):
     log = UserActivityLog(user_id=user_id, activity=activity, timestamp=datetime.utcnow())
     db.session.add(log)
     db.session.commit()
-    app.logger.info(f"User {user_id} activity: {activity}")
+    logger.info(f"User {user_id} activity: {activity}")
 
     # Call preprocessing functions after logging activities
     preprocessed_data = preprocess.preprocess_activity_data()
-    app.logger.info(f"Preprocessed activity data: {preprocessed_data}")
+    logger.info(f"Preprocessed activity data: {preprocessed_data}")
 
 
 """

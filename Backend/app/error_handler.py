@@ -131,3 +131,15 @@ def init_error_handler(app):
         app.logger.error(f"Authentication Error: {str(e)}")
         logger.error(f"Authentication Error: {str(e)}")  # Log the error
         return jsonify(error="An authentication error occurred"), 401
+
+    @app.errorhandler(Exception)
+    def handle_unexpected_error(e):
+        """
+        Handle unexpected errors.
+
+        :param e: The exception.
+        :return: JSON response with error message and status code 500.
+        """
+        app.logger.error(f"Unexpected Error: {str(e)}")
+        logger.error(f"Unexpected Error: {str(e)}")  # Log the error
+        return jsonify(error="An unexpected error occurred"), 500

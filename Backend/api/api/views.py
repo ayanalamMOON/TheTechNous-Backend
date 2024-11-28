@@ -16,6 +16,7 @@ from django.db.models import Q
 from rest_framework import serializers
 from channels.generic.websocket import WebsocketConsumer
 import json
+from django.utils.html import escape
 
 
 class StandardizedResponse:
@@ -35,7 +36,7 @@ class StandardizedResponse:
             "status": "error",
             "message": message
         }
-        return Response(response, status=status_code)
+        return Response(response, status_code)
 
 
 class CustomPagination(PageNumberPagination):
@@ -68,7 +69,7 @@ class ExampleView(APIView):
 
         data = {
             "message": "Data received successfully",
-            "received_data": request.data
+            "received_data": escape(request.data)
         }
         return StandardizedResponse.success(data)
 
@@ -104,7 +105,7 @@ class NotificationView(APIView):
         message = request.data.get("message")
         send_mail(
             'New Notification',
-            message,
+            escape(message),
             settings.DEFAULT_FROM_EMAIL,
             [request.user.email],
             fail_silently=False,
@@ -228,5 +229,5 @@ class WebSocketConsumer(WebsocketConsumer):
     def receive(self, text_data):
         data = json.loads(text_data)
         self.send(text_data=json.dumps({
-            'message': data['message']
+            'message': escape(data['message'])
         }))
