@@ -2,9 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, User
 from app.activity_logger import log_user_activity
-from app import app
 
-admin = Blueprint('admin', __name__, app=app)
+admin = Blueprint('admin', __name__)
 
 @admin.route('/')
 def admin_home():

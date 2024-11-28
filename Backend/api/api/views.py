@@ -129,7 +129,7 @@ class FileUploadView(APIView):
 class AdvancedSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
-        results = User.objects.filter(Q(username__icontains=query) | Q(email__icontains(query)))
+        results = User.objects.filter(Q(username__icontains(query) | Q(email__icontains(query)))
         data = [{"id": user.id, "username": user.username, "email": user.email} for user in results]
         return StandardizedResponse.success(data)
 

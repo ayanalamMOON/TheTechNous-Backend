@@ -2,11 +2,10 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 from django.conf import settings
-from Backend.app.viwes import app
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
-app = Celery('api', app=app)
+app = Celery('api')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

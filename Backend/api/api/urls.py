@@ -17,7 +17,6 @@ from app import views
 from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.sitemaps import Sitemap
 from app.sitemaps import BlogPostSitemap
-from Backend.app.viwes import app
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from api.api import views as api_views
@@ -44,10 +43,10 @@ sitemaps = {
 }
 
 urlpatterns = [
-    path('admin/', admin.site.urls, app=app),
-    path('', views.index, name='index', app=app),  # Example view from views.py
-    path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap', app=app),
-    path('post/<slug:slug>/', views.post_detail, name='post_detail', app=app),
+    path('admin/', admin.site.urls),
+    path('', views.index, name='index'),  # Example view from views.py
+    path('sitemap.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('post/<slug:slug>/', views.post_detail, name='post_detail'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('roles/', include('app.roles.urls')),  # User roles and permissions management

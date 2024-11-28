@@ -1,4 +1,3 @@
-from Backend.app.viwes import app
 from flask import jsonify
 from werkzeug.exceptions import HTTPException # type: ignore
 from sqlalchemy.exc import SQLAlchemyError

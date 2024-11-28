@@ -5,9 +5,8 @@ from flask_caching import Cache
 from marshmallow import ValidationError
 from app.schemas import blog_post_schema
 from app.activity_logger import log_user_activity
-from app import app
 
-blog = Blueprint('blog', __name__, app=app)
+blog = Blueprint('blog', __name__)
 cache = Cache(config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': 'redis://localhost:6379/1'})
 cache.init_app(app)
 

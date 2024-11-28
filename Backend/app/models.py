@@ -4,7 +4,6 @@ from argon2 import PasswordHasher
 import re
 from cryptography.fernet import Fernet
 import os
-from Backend.app.viwes import db
 
 ph = PasswordHasher()
 
@@ -142,6 +141,6 @@ class SearchQuery(db.Model):
     user = db.relationship('User', backref=db.backref('search_queries', lazy=True))
 
 class PasswordHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)

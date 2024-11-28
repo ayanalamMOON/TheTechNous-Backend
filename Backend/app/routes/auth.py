@@ -3,10 +3,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app.models import db, User
 import pyotp
 from app.activity_logger import log_user_activity
-from app import app
 from datetime import datetime, timedelta
 
-auth = Blueprint('auth', __name__, app=app)
+auth = Blueprint('auth', __name__)
 
 # Account lockout settings
 MAX_FAILED_ATTEMPTS = 5
