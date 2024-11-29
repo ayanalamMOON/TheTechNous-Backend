@@ -16,7 +16,7 @@ kombu==5.2.3
 black==24.3.0
 coverage==6.2
 pytest==6.2.5
-django==4.2.16
+django
 channels==3.0.3
 dj-database-url==0.5.0
 flake8==6.0.0
