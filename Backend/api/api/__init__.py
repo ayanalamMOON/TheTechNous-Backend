@@ -1,3 +1,8 @@
+"""
+This module initializes the Celery application for the Django project.
+"""
+
+
 from __future__ import absolute_import, unicode_literals
 import os
 
@@ -15,4 +20,9 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 @app.task(bind=True)
 def debug_task(self):
+    """
+    A simple debug task that prints the request.
+
+    :param self: The task instance.
+    """
     print('Request: {0!r}'.format(self.request))

@@ -6,7 +6,9 @@ from argon2 import PasswordHasher
 from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 
+
 db = SQLAlchemy()
+
 
 ph = PasswordHasher()
 
@@ -16,6 +18,24 @@ cipher_suite = Fernet(key)
 
 
 class User(db.Model):
+    """
+    User model representing a user in the system.
+
+    Attributes:
+        id (int): The unique identifier for the user.
+        username (str): The username of the user.
+        email (str): The email address of the user.
+        password_hash (str): The hashed password of the user.
+        is_admin (bool): Indicates if the user is an admin.
+        roles (list): The roles assigned to the user.
+        mfa_secret (str): The secret key for multi-factor authentication.
+        salt (str): The salt used for password hashing.
+        password_history (list): The history of passwords used by the user.
+        last_login (datetime): The timestamp of the user's last login.
+        is_active (bool): Indicates if the user is active.
+        password_reset_token (str): The token for password reset.
+        password_reset_token_expiry (datetime): The expiry timestamp for the password reset token.
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
@@ -91,17 +111,43 @@ class User(db.Model):
 
 
 class Role(db.Model):
+    """
+    Role model representing a role in the system.
+
+    Attributes:
+        id (int): The unique identifier for the role.
+        name (str): The name of the role.
+    """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
 
 
 class UserRoles(db.Model):
+    """
+    UserRoles model representing the association between users and roles.
+
+    Attributes:
+        id (int): The unique identifier for the user-role association.
+        user_id (int): The unique identifier for the user.
+        role_id (int): The unique identifier for the role.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete='CASCADE'))
 
 
 class BlogPost(db.Model):
+    """
+    BlogPost model representing a blog post in the system.
+
+    Attributes:
+        id (int): The unique identifier for the blog post.
+        title (str): The title of the blog post.
+        content (str): The content of the blog post.
+        author_id (int): The unique identifier for the author of the blog post.
+        created_at (datetime): The timestamp when the blog post was created.
+        updated_at (datetime): The timestamp when the blog post was last updated.
+    """
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
@@ -116,6 +162,15 @@ class BlogPost(db.Model):
 
 
 class UserActivityLog(db.Model):
+    """
+    UserActivityLog model representing a log of user activities.
+
+    Attributes:
+        id (int): The unique identifier for the activity log.
+        user_id (int): The unique identifier for the user.
+        activity (str): The description of the activity.
+        timestamp (datetime): The timestamp when the activity occurred.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
     activity = db.Column(db.String(255), nullable=False)
@@ -125,6 +180,16 @@ class UserActivityLog(db.Model):
 
 
 class Notification(db.Model):
+    """
+    Notification model representing a notification for a user.
+
+    Attributes:
+        id (int): The unique identifier for the notification.
+        user_id (int): The unique identifier for the user.
+        message (str): The message of the notification.
+        timestamp (datetime): The timestamp when the notification was created.
+        is_read (bool): Indicates if the notification has been read.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
     message = db.Column(db.String(255), nullable=False)
@@ -135,7 +200,16 @@ class Notification(db.Model):
 
 
 class SocialMediaShare(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    """
+    SocialMediaShare model representing a social media share of a blog post.
+
+    Attributes:
+        id (int): The unique identifier for the social media share.
+        post_id (int): The unique identifier for the blog post.
+        platform (str): The social media platform where the post was shared.
+        shared_at (datetime): The timestamp when the post was shared.
+    """
+    id = db.Column(db.Integer, primary key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_post.id'), nullable=False, index=True)
     platform = db.Column(db.String(64), nullable=False)
     shared_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -144,6 +218,15 @@ class SocialMediaShare(db.Model):
 
 
 class MediaFile(db.Model):
+    """
+    MediaFile model representing a media file uploaded by a user.
+
+    Attributes:
+        id (int): The unique identifier for the media file.
+        file_name (str): The name of the media file.
+        file_url (str): The URL of the media file.
+        uploaded_at (datetime): The timestamp when the media file was uploaded.
+    """
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(255), nullable=False)
     file_url = db.Column(db.String(255), nullable=False)
@@ -151,6 +234,15 @@ class MediaFile(db.Model):
 
 
 class SearchQuery(db.Model):
+    """
+    SearchQuery model representing a search query made by a user.
+
+    Attributes:
+        id (int): The unique identifier for the search query.
+        query (str): The search query string.
+        user_id (int): The unique identifier for the user who made the query.
+        timestamp (datetime): The timestamp when the search query was made.
+    """
     id = db.Column(db.Integer, primary_key=True)
     query = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, index=True)
@@ -160,6 +252,14 @@ class SearchQuery(db.Model):
 
 
 class PasswordHistory(db.Model):
+    """
+    PasswordHistory model representing the history of passwords used by a user.
+
+    Attributes:
+        id (int): The unique identifier for the password history entry.
+        user_id (int): The unique identifier for the user.
+        password_hash (str): The hashed password.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)

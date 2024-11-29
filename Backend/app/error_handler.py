@@ -1,5 +1,6 @@
 import logging
 
+
 from flask import jsonify
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError

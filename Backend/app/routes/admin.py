@@ -3,15 +3,27 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, User
 from app.activity_logger import log_user_activity
 
+
 admin = Blueprint('admin', __name__)
 
 
 @admin.route('/')
 def admin_home():
+    """
+    Admin Home endpoint.
+
+    :return: JSON response with a message.
+    """
     return jsonify({'msg': 'Admin Home'}), 200
 
 
 def is_admin(user_id):
+    """
+    Check if the user is an admin.
+
+    :param user_id: The ID of the user.
+    :return: True if the user is an admin, False otherwise.
+    """
     user = User.query.get(user_id)
     return user.is_admin if user else False
 

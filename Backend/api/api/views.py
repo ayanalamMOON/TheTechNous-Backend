@@ -23,6 +23,13 @@ from elasticsearch_dsl.query import MultiMatch
 
 
 class StandardizedResponse:
+    """
+    A class to standardize API responses.
+
+    Methods:
+        success(data, metadata=None): Returns a standardized success response.
+        error(message, status_code=status.HTTP_400_BAD_REQUEST): Returns a standardized error response.
+    """
     @staticmethod
     def success(data, metadata=None):
         response = {
@@ -43,6 +50,14 @@ class StandardizedResponse:
 
 
 class CustomPagination(PageNumberPagination):
+    """
+    Custom pagination class to standardize paginated responses.
+
+    Attributes:
+        page_size (int): Default number of items per page.
+        page_size_query_param (str): Query parameter to specify page size.
+        max_page_size (int): Maximum number of items per page.
+    """
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
@@ -60,6 +75,13 @@ class CustomPagination(PageNumberPagination):
 
 
 class ExampleView(APIView):
+    """
+    Example view to demonstrate standardized responses.
+
+    Methods:
+        get(request): Handles GET requests.
+        post(request): Handles POST requests.
+    """
     def get(self, request):
         data = {
             "message": "This is an example response"
@@ -78,6 +100,13 @@ class ExampleView(APIView):
 
 
 class UserRoleView(APIView):
+    """
+    View to manage user roles.
+
+    Methods:
+        get(request): Retrieves all users and their roles.
+        post(request): Adds a role to a user.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -96,6 +125,13 @@ class UserRoleView(APIView):
 
 
 class NotificationView(APIView):
+    """
+    View to manage notifications.
+
+    Methods:
+        get(request): Retrieves all notifications for the authenticated user.
+        post(request): Sends a notification to the authenticated user.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -117,6 +153,12 @@ class NotificationView(APIView):
 
 
 class SocialMediaShareView(APIView):
+    """
+    View to handle social media sharing.
+
+    Methods:
+        post(request): Shares a post on social media.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -127,6 +169,12 @@ class SocialMediaShareView(APIView):
 
 
 class FileUploadView(APIView):
+    """
+    View to handle file uploads.
+
+    Methods:
+        post(request): Uploads a file.
+    """
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -141,6 +189,12 @@ class FileUploadView(APIView):
 
 
 class AdvancedSearchView(APIView):
+    """
+    View to handle advanced search functionality.
+
+    Methods:
+        get(request): Performs a search based on query parameters.
+    """
     def get(self, request):
         query = request.query_params.get('q', '')
         filter_by = request.query_params.get('filter_by', '')
@@ -172,6 +226,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet to manage users.
+
+    Methods:
+        list(request, *args, **kwargs): Retrieves a list of users.
+        retrieve(request, *args, **kwargs): Retrieves a single user.
+        create(request, *args, **kwargs): Creates a new user.
+        update(request, *args, **kwargs): Updates an existing user.
+        destroy(request, *args, **kwargs): Deletes a user.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -212,11 +276,23 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CustomPermission(IsAuthenticated):
+    """
+    Custom permission class to check if the user is authenticated and active.
+
+    Methods:
+        has_permission(request, view): Checks if the user has permission to access the view.
+    """
     def has_permission(self, request, view):
         return super().has_permission(request, view) and request.user.is_active
 
 
 class CustomThrottle:
+    """
+    Custom throttle class to implement custom throttling logic.
+
+    Methods:
+        allow_request(request, view): Checks if the request is allowed based on custom throttling logic.
+    """
     def allow_request(self, request, view):
         # Implement custom throttling logic here
         return True
@@ -240,6 +316,14 @@ class CustomPagination(PageNumberPagination):
 
 
 class WebSocketConsumer(WebsocketConsumer):
+    """
+    WebSocket consumer to handle WebSocket connections.
+
+    Methods:
+        connect(): Handles WebSocket connection.
+        disconnect(close_code): Handles WebSocket disconnection.
+        receive(text_data): Handles received WebSocket messages.
+    """
     def connect(self):
         self.accept()
 
@@ -254,6 +338,14 @@ class WebSocketConsumer(WebsocketConsumer):
 
 
 class NotificationConsumer(WebsocketConsumer):
+    """
+    WebSocket consumer to handle notification WebSocket connections.
+
+    Methods:
+        connect(): Handles WebSocket connection.
+        disconnect(close_code): Handles WebSocket disconnection.
+        receive(text_data): Handles received WebSocket messages.
+    """
     def connect(self):
         self.accept()
 
@@ -268,6 +360,13 @@ class NotificationConsumer(WebsocketConsumer):
 
 
 class NotificationCenterView(APIView):
+    """
+    View to manage the notification center.
+
+    Methods:
+        get(request): Retrieves all notifications for the authenticated user.
+        post(request): Sends a notification to the authenticated user.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

@@ -7,7 +7,9 @@ from app.models import db, User
 from app.activity_logger import log_user_activity
 from app.utils import generate_password_reset_token, verify_password_reset_token, send_password_reset_email
 
+
 auth = Blueprint('auth', __name__)
+
 
 # Account lockout settings
 MAX_FAILED_ATTEMPTS = 5

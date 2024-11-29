@@ -7,6 +7,7 @@ from app.schemas import blog_post_schema
 from app.activity_logger import log_user_activity
 from app import app
 
+
 blog = Blueprint('blog', __name__)
 cache = Cache(config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': 'redis://localhost:6379/1'})
 cache.init_app(app)
@@ -20,6 +21,22 @@ def can_post(user_id):
 @blog.route('/post', methods=['GET'])
 @cache.cached(timeout=60)
 def get_posts():
+    """
+    Retrieve all blog posts.
+
+    **Response:**
+    ```json
+    [
+      {
+        "id": 1,
+        "title": "New Blog Post",
+        "content": "This is the content of the new blog post.",
+        "author": "john_doe",
+        "url": "/blog/post/1"
+      }
+    ]
+    ```
+    """
     posts = BlogPost.query.all()
     app.logger.info("Retrieved all blog posts")
     return jsonify([{"id": post.id, "title": post.title,
@@ -29,6 +46,28 @@ def get_posts():
 @blog.route('/post', methods=['POST'])
 @jwt_required()
 def create_post():
+    """
+    Create a new blog post.
+
+    **Headers:**
+    Authorization: Bearer your_jwt_token
+
+    **Request:**
+    ```json
+    {
+      "title": "New Blog Post",
+      "content": "This is the content of the new blog post."
+    }
+    ```
+
+    **Response:**
+    ```json
+    {
+      "msg": "Post Created Successfully",
+      "id": 1
+    }
+    ```
+    """
     current_user_id = get_jwt_identity()
     if not can_post(current_user_id):
         return jsonify({"msg": "You don't have the permission to post"}), 403

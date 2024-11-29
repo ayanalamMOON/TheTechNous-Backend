@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+
 from pathlib import Path
+
+
 import os
 import logging.config
 import dj_database_url
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'channels',  # Django Channels
     'rest_framework',  # Django Rest Framework
     'django_elasticsearch_dsl',  # Elasticsearch integration
+    'django_extensions',  # Added django_extensions
 ]
 
 MIDDLEWARE = [
@@ -401,3 +405,6 @@ ELASTICSEARCH_DSL = {
         'hosts': 'localhost:9200'
     },
 }
+
+# Django Extensions settings
+SHELL_PLUS = 'ipython'  # Added SHELL_PLUS setting

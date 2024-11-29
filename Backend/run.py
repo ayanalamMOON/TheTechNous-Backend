@@ -1,10 +1,12 @@
 from flask import Flask
 
+
 from app.routes.admin import admin
 from app.routes.blog import blog
 from app.routes.auth import auth
 from app.models import db
 from app.error_handler import init_error_handler
+
 
 app = Flask(__name__)
 

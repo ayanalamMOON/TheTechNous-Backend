@@ -1,3 +1,18 @@
+"""
+This module defines the API routes for the application.
+
+It includes the following routes:
+- Authentication routes
+- Admin routes
+- Blog routes
+- User roles and permissions management routes
+- Notification system routes
+- Social media sharing routes
+- File uploads and media management routes
+- Advanced search functionality routes
+"""
+
+
 from flask import Blueprint
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -11,13 +26,16 @@ from app.routes.social import social
 from app.routes.media import media
 from app.routes.search import search
 
+
 api = Blueprint('api', __name__)
+
 
 limiter = Limiter(
     get_remote_address,
     app=api,
     default_limits=["200 per day", "50 per hour"]
 )
+
 
 api.register_blueprint(auth, url_prefix='/auth')
 api.register_blueprint(admin, url_prefix='/admin')
