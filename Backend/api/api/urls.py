@@ -52,6 +52,7 @@ urlpatterns = [
     path('social/', include('app.social.urls')),  # Social media sharing
     path('media/', include('app.media.urls')),  # File uploads and media management
     path('search/', include('app.search.urls')),  # Advanced search functionality
+    path('notification-center/', api_views.NotificationCenterView.as_view(), name='notification_center'),  # Notification center view
 ]
 
 websocket_urlpatterns = [

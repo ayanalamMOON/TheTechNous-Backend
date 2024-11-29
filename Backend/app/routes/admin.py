@@ -123,3 +123,65 @@ def delete_user(user_id):
     log_user_activity(current_user_id, f'Deleted user {user_id}')
 
     return jsonify({"msg": "User deleted successfully"}), 200
+
+
+@admin.route('/users/<int:user_id>/activate', methods=['PUT'])
+@jwt_required()
+def activate_user(user_id):
+    """
+    Activate a user account.
+
+    **Headers:**
+    Authorization: Bearer your_jwt_token
+
+    **Response:**
+    ```json
+    {
+      "msg": "User activated successfully"
+    }
+    ```
+    """
+    current_user_id = get_jwt_identity()
+    if not is_admin(current_user_id):
+        return jsonify({'msg': 'Admin Access required'}), 403
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+
+    user.is_active = True
+    db.session.commit()
+    log_user_activity(current_user_id, f'Activated user {user_id}')
+
+    return jsonify({"msg": "User activated successfully"}), 200
+
+
+@admin.route('/users/<int:user_id>/deactivate', methods=['PUT'])
+@jwt_required()
+def deactivate_user(user_id):
+    """
+    Deactivate a user account.
+
+    **Headers:**
+    Authorization: Bearer your_jwt_token
+
+    **Response:**
+    ```json
+    {
+      "msg": "User deactivated successfully"
+    }
+    ```
+    """
+    current_user_id = get_jwt_identity()
+    if not is_admin(current_user_id):
+        return jsonify({'msg': 'Admin Access required'}), 403
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+
+    user.is_active = False
+    db.session.commit()
+    log_user_activity(current_user_id, f'Deactivated user {user_id}')
+
+    return jsonify({"msg": "User deactivated successfully"}), 200

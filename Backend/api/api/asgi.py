@@ -28,6 +28,7 @@ application = ProtocolTypeRouter(
             URLRouter(
                 [
                     path("ws/some_path/", views.SomeConsumer.as_asgi()),
+                    path("ws/notifications/", views.NotificationConsumer.as_asgi()),  # Pddee
                 ]
             )
         ),

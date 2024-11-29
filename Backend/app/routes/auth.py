@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from app.models import db, User
 from app.activity_logger import log_user_activity
+from app.utils import generate_password_reset_token, verify_password_reset_token, send_password_reset_email
 
 auth = Blueprint('auth', __name__)
 
@@ -73,6 +74,7 @@ def login():
                 access_token = create_access_token(identity=user.id)
                 log_user_activity(user.id, 'User logged in')
                 user.failed_attempts = 0
+                user.last_login = datetime.utcnow()
                 db.session.commit()
                 return jsonify({'access_token': access_token}), 200
             else:
@@ -135,3 +137,47 @@ def disable_2fa():
         log_user_activity(current_user, 'Disabled 2FA')
         return jsonify({'message': '2FA disabled successfully'}), 200
     return jsonify({'message': '2FA is not enabled'}), 400
+
+
+@auth.route('/request_password_reset', methods=['POST'])
+def request_password_reset():
+    """
+    Request a password reset.
+
+    :return: JSON response with a message.
+    """
+    data = request.get_json()
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        token = generate_password_reset_token(user.id)
+        send_password_reset_email(user.email, token)
+        log_user_activity(user.id, 'Requested password reset')
+        return jsonify({'message': 'Password reset email sent'}), 200
+
+    return jsonify({'message': 'Email not found'}), 404
+
+
+@auth.route('/reset_password', methods=['POST'])
+def reset_password():
+    """
+    Reset the user's password using a token.
+
+    :return: JSON response with a message.
+    """
+    data = request.get_json()
+    token = data.get('token')
+    new_password = data.get('new_password')
+
+    user_id = verify_password_reset_token(token)
+    if user_id:
+        user = User.query.get(user_id)
+        user.set_password(new_password)
+        user.password_reset_token = None
+        user.password_reset_token_expiry = None
+        db.session.commit()
+        log_user_activity(user.id, 'Password reset successfully')
+        return jsonify({'message': 'Password reset successfully'}), 200
+
+    return jsonify({'message': 'Invalid or expired token'}), 400

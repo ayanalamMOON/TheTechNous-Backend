@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from argon2 import PasswordHasher
 from cryptography.fernet import Fernet
+from datetime import datetime, timedelta
 
 db = SQLAlchemy()
 
@@ -24,6 +25,10 @@ class User(db.Model):
     mfa_secret = db.Column(db.String(32), nullable=True)
     salt = db.Column(db.String(32), nullable=False, default=os.urandom(16).hex())
     password_history = db.relationship('PasswordHistory', backref='user', lazy=True)
+    last_login = db.Column(db.DateTime, nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    password_reset_token = db.Column(db.String(128), nullable=True)
+    password_reset_token_expiry = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         if not self.validate_password(password):
@@ -124,6 +129,7 @@ class Notification(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
     message = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    is_read = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', backref=db.backref('notifications', lazy=True))
 

@@ -17,6 +17,9 @@ from rest_framework import serializers
 from channels.generic.websocket import WebsocketConsumer
 import json
 from django.utils.html import escape
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search, Q as ESQ
+from elasticsearch_dsl.query import MultiMatch
 
 
 class StandardizedResponse:
@@ -140,9 +143,26 @@ class FileUploadView(APIView):
 class AdvancedSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
-        results = User.objects.filter(Q(username__icontains(query) | Q(email__icontains(query))))
-        data = [{"id": user.id, "username": user.username, "email": user.email} for user in results]
-        return StandardizedResponse.success(data)
+        filter_by = request.query_params.get('filter_by', '')
+        sort_by = request.query_params.get('sort_by', '')
+
+        es = Elasticsearch()
+        s = Search(using=es, index="users")
+
+        if query:
+            q = MultiMatch(query=query, fields=['username', 'email'])
+            s = s.query(q)
+
+        if filter_by:
+            s = s.filter(ESQ('term', **{filter_by: True}))
+
+        if sort_by:
+            s = s.sort(sort_by)
+
+        response = s.execute()
+        results = [{"id": hit.meta.id, "username": hit.username, "email": hit.email} for hit in response]
+
+        return StandardizedResponse.success(results)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -231,3 +251,38 @@ class WebSocketConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'message': escape(data['message'])
         }))
+
+
+class NotificationConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+
+    def disconnect(self, close_code):
+        pass
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+        self.send(text_data=json.dumps({
+            'message': escape(data['message'])
+        }))
+
+
+class NotificationCenterView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        notifications = request.user.notifications.all()
+        data = [{"id": notification.id, "message": notification.message, "timestamp": notification.timestamp}
+                for notification in notifications]
+        return StandardizedResponse.success(data)
+
+    def post(self, request):
+        message = request.data.get("message")
+        send_mail(
+            'New Notification',
+            escape(message),
+            settings.DEFAULT_FROM_EMAIL,
+            [request.user.email],
+            fail_silently=False,
+        )
+        return StandardizedResponse.success({"message": "Notification sent successfully"})

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Site framework support
     'channels',  # Django Channels
     'rest_framework',  # Django Rest Framework
+    'django_elasticsearch_dsl',  # Elasticsearch integration
 ]
 
 MIDDLEWARE = [
@@ -392,4 +393,11 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+}
+
+# Elasticsearch settings
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
 }
