@@ -296,6 +296,12 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:63
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'app.tasks.task_name',
+        'schedule': 3600.0,  # Run every hour
+    },
+}
 
 # Redis caching configuration
 CACHES = {
