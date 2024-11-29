@@ -92,35 +92,18 @@ ASGI_APPLICATION = 'api.asgi.application'  # Django Channels
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
-        'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
-        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
-        'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
-        'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
-        'OPTIONS': {
-            'MAX_CONNS': 20,  # Maximum number of connections in the pool
-            'MIN_CONNS': 5,   # Minimum number of connections in the pool
+        'ENGINE': 'djongo',
+        'NAME': os.getenv('DJANGO_DB_NAME', 'your_mongodb_name'),
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': os.getenv('DJANGO_DB_HOST', 'your_mongodb_host'),
+            'port': int(os.getenv('DJANGO_DB_PORT', 'your_mongodb_port')),
+            'username': os.getenv('DJANGO_DB_USER', 'your_mongodb_username'),
+            'password': os.getenv('DJANGO_DB_PASSWORD', 'your_mongodb_password'),
+            'authSource': 'admin',
         }
     }
 }
-
-# Free hosting service database settings
-if os.getenv('DJANGO_ENVIRONMENT') == 'free_hosting':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('FREE_HOSTING_DB_NAME'),
-            'USER': os.getenv('FREE_HOSTING_DB_USER'),
-            'PASSWORD': os.getenv('FREE_HOSTING_DB_PASSWORD'),
-            'HOST': os.getenv('FREE_HOSTING_DB_HOST'),
-            'PORT': os.getenv('FREE_HOSTING_DB_PORT'),
-            'OPTIONS': {
-                'MAX_CONNS': 20,  # Maximum number of connections in the pool
-                'MIN_CONNS': 5,   # Minimum number of connections in the pool
-            }
-        }
-    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -200,20 +183,6 @@ ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
 if ENVIRONMENT == 'production':
     DEBUG = False
     ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DJANGO_DB_NAME'),
-            'USER': os.getenv('DJANGO_DB_USER'),
-            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
-            'HOST': os.getenv('DJANGO_DB_HOST'),
-            'PORT': os.getenv('DJANGO_DB_PORT'),
-            'OPTIONS': {
-                'MAX_CONNS': 20,  # Maximum number of connections in the pool
-                'MIN_CONNS': 5,   # Minimum number of connections in the pool
-            }
-        }
-    }
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -230,54 +199,12 @@ if ENVIRONMENT == 'production':
 elif ENVIRONMENT == 'ci':
     DEBUG = False
     ALLOWED_HOSTS = ['*']
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('CI_DB_NAME', 'ci_db'),
-            'USER': os.getenv('CI_DB_USER', 'ci_user'),
-            'PASSWORD': os.getenv('CI_DB_PASSWORD', 'ci_password'),
-            'HOST': os.getenv('CI_DB_HOST', 'localhost'),
-            'PORT': os.getenv('CI_DB_PORT', '5432'),
-            'OPTIONS': {
-                'MAX_CONNS': 20,  # Maximum number of connections in the pool
-                'MIN_CONNS': 5,   # Minimum number of connections in the pool
-            }
-        }
-    }
 elif ENVIRONMENT == 'staging':
     DEBUG = False
     ALLOWED_HOSTS = os.getenv('STAGING_ALLOWED_HOSTS', '').split(',')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('STAGING_DB_NAME'),
-            'USER': os.getenv('STAGING_DB_USER'),
-            'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
-            'HOST': os.getenv('STAGING_DB_HOST'),
-            'PORT': os.getenv('STAGING_DB_PORT'),
-            'OPTIONS': {
-                'MAX_CONNS': 20,  # Maximum number of connections in the pool
-                'MIN_CONNS': 5,   # Minimum number of connections in the pool
-            }
-        }
-    }
 else:
     DEBUG = True
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DJANGO_DB_NAME', 'dev_db'),
-            'USER': os.getenv('DJANGO_DB_USER', 'dev_user'),
-            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'dev_password'),
-            'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
-            'PORT': os.getenv('DJANGO_DB_PORT', '5432'),
-            'OPTIONS': {
-                'MAX_CONNS': 20,  # Maximum number of connections in the pool
-                'MIN_CONNS': 5,   # Minimum number of connections in the pool
-            }
-        }
-    }
 
 # HTTPS settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
