@@ -439,7 +439,7 @@ const Navbar: React.FC = () => {
                   </ActionButton>
                 </>
               ) : (
-                <AuthButton to="/login">
+                <AuthButton to="/auth">
                   <FiUser size={18} />
                   Sign In
                 </AuthButton>
@@ -481,7 +481,7 @@ const Navbar: React.FC = () => {
             ))}
             
             {!isLoggedIn && (
-              <MobileNavLink to="/login" onClick={handleLogin}>
+              <MobileNavLink to="/auth" onClick={handleLogin}>
                 Sign In / Register
               </MobileNavLink>
             )}

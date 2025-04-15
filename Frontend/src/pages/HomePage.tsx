@@ -635,7 +635,7 @@ const HomePage: React.FC = () => {
               <FeatureDescription>
                 Find exactly what you're looking for with our powerful search functionality.
               </FeatureDescription>
-              <Link to="#" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/blog" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 Learn More <FiArrowRight />
               </Link>
             </FeatureCard>
