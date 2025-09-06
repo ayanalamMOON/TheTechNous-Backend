@@ -49,6 +49,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     password_reset_token = db.Column(db.String(128), nullable=True)
     password_reset_token_expiry = db.Column(db.DateTime, nullable=True)
+    failed_attempts = db.Column(db.Integer, default=0)
+    lockout_until = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         if not self.validate_password(password):
@@ -209,7 +211,7 @@ class SocialMediaShare(db.Model):
         platform (str): The social media platform where the post was shared.
         shared_at (datetime): The timestamp when the post was shared.
     """
-    id = db.Column(db.Integer, primary key=True)
+    id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_post.id'), nullable=False, index=True)
     platform = db.Column(db.String(64), nullable=False)
     shared_at = db.Column(db.DateTime, server_default=db.func.now())
